@@ -1,4 +1,6 @@
 import React from 'react';
+import { Canvas } from '@react-three/fiber';
+import DodecahedronLogo from './DodecahedronLogo';
 import './App.css';
 
 function App() {
@@ -20,7 +22,9 @@ function App() {
           <button className="cta-button">Explore Collections</button>
         </div>
         <div className="hero-visual">
-          <div className="abstract-shape"></div>
+          <Canvas camera={{ position: [0, 0, 7], fov: 50 }}>
+            <DodecahedronLogo />
+          </Canvas>
         </div>
       </header>
 
