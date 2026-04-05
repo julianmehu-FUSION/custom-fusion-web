@@ -1,6 +1,7 @@
 import React, { useRef, Suspense } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Environment, Float, useGLTF } from '@react-three/drei';
+import * as THREE from 'three';
 
 function LogoMeshes() {
   const outerRef = useRef();
@@ -14,18 +15,19 @@ function LogoMeshes() {
   const textGLTF = useGLTF('/assets/text.glb');
 
   // Override materials on load to enforce the Zinc/Silver aesthetics
-  /*
   React.useEffect(() => {
-    outerGLTF.scene.traverse((child) => {
-      if (child.isMesh) {
-        child.material = new THREE.MeshStandardMaterial({
-          color: '#2a2a2c', // Glossy Zinc / Dark Metal
-          metalness: 1.0,
-          roughness: 0.15,
-          envMapIntensity: 2
-        });
-      }
-    });
+    if (outerGLTF.scene) {
+      outerGLTF.scene.traverse((child) => {
+        if (child.isMesh) {
+          child.material = new THREE.MeshStandardMaterial({
+            color: '#2a2a2c', // Glossy Zinc / Dark Metal
+            metalness: 1.0,
+            roughness: 0.15,
+            envMapIntensity: 2
+          });
+        }
+      });
+    }
 
     [inner1GLTF.scene, inner3GLTF.scene].forEach(scene => {
       scene.traverse((child) => {
@@ -51,7 +53,6 @@ function LogoMeshes() {
       }
     });
   }, [outerGLTF, inner1GLTF, inner3GLTF, textGLTF]);
-  */
 
 
   useFrame((state, delta) => {
