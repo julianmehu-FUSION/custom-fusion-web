@@ -1,28 +1,25 @@
 import React, { useRef, useEffect, Suspense } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Environment, Float, useGLTF, useTexture, Sparkles } from '@react-three/drei';
+import { Environment, Float, useGLTF, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 
 function LogoMeshes() {
   const outerRef = useRef();
-  const inner1Ref = useRef(); // The silver metal object
-  const plasmaOrbRef = useRef(); // The swirling plasma orb
-  const pointLightRef = useRef(); // To pulse the light emit
+  const inner1Ref = useRef(); 
+  const knot1Ref = useRef(); 
+  const knot2Ref = useRef(); 
+  const pointLightRef = useRef(); 
 
   const outerGLTF = useGLTF('/assets/outer_sphere.glb');
   const inner1GLTF = useGLTF('/assets/inner_1.glb');
   
-  // Load the exact blue swirling smoke image the user provided
-  const plasmaTexture = useTexture('/assets/plasma.jpg');
-
   // Override materials on the CAD geometry
   useEffect(() => {
-    // 1. Outer Sphere: Dark Metal
     if (outerGLTF.scene) {
       outerGLTF.scene.traverse((child) => {
         if (child.isMesh) {
           child.material = new THREE.MeshStandardMaterial({
-            color: '#1a1a1c', // Very Dark Metal
+            color: '#1a1a1c', 
             metalness: 1.0,
             roughness: 0.15,
             envMapIntensity: 2
@@ -32,12 +29,11 @@ function LogoMeshes() {
       });
     }
 
-    // 2. Middle Structure (inner 1): Silver Metal
     if (inner1GLTF.scene) {
       inner1GLTF.scene.traverse((child) => {
         if (child.isMesh) {
           child.material = new THREE.MeshStandardMaterial({
-            color: '#ffffff', // Pure Silver
+            color: '#ffffff', 
             metalness: 1.0,
             roughness: 0.05,
             envMapIntensity: 3
@@ -50,31 +46,31 @@ function LogoMeshes() {
 
   // Physics animation loop
   useFrame((state, delta) => {
-    // Spin outer shell slowly
     if (outerRef.current) {
       outerRef.current.rotation.x -= delta * 0.1;
       outerRef.current.rotation.y += delta * 0.15;
     }
     
-    // Spin silver middle structure counter-directionally
     if (inner1Ref.current) {
       inner1Ref.current.rotation.x += delta * 0.3;
       inner1Ref.current.rotation.y -= delta * 0.2;
     }
 
-    // Spin the new plasma orb texture drastically to create a vortex
-    if (plasmaOrbRef.current) {
-      plasmaOrbRef.current.rotation.y += delta * 1.5;
-      plasmaOrbRef.current.rotation.z += delta * 0.2;
+    // Spin the chaotic energy knots in opposing directions to simulate the plasma strands swirling
+    if (knot1Ref.current) {
+      knot1Ref.current.rotation.y += delta * 1.8;
+      knot1Ref.current.rotation.z += delta * 0.5;
+    }
+    if (knot2Ref.current) {
+      knot2Ref.current.rotation.x -= delta * 1.5;
+      knot2Ref.current.rotation.z -= delta * 1.2;
       
-      // Jitter the physical size of the plasma slightly so it feels like living energy
       const t = state.clock.elapsedTime;
       const flicker = Math.sin(t * 15) * 0.5 + Math.cos(t * 23) * 0.5;
-      const scale = 1 + (flicker * 0.05);
-      plasmaOrbRef.current.scale.set(scale, scale, scale);
+      const scale = 1 + (flicker * 0.1);
+      knot2Ref.current.scale.set(scale, scale, scale);
     }
 
-    // Flicker the actual PointLight to cast chaotic fire lighting onto the metal cage
     if (pointLightRef.current) {
       const t = state.clock.elapsedTime;
       const flicker = Math.sin(t * 15) * 0.5 + Math.cos(t * 23) * 0.5;
@@ -82,10 +78,21 @@ function LogoMeshes() {
     }
   });
 
+  // A standalone material for the energy strands
+  const plasmaStringMaterial = new THREE.MeshStandardMaterial({
+    color: '#002244',
+    emissive: '#11aaff',
+    emissiveIntensity: 3.5,
+    transparent: true,
+    opacity: 0.7,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+
   return (
     <group scale={100}>
       
-      {/* Nuclear Fire Dynamic Jitter Light from the center */}
+      {/* Dynamic Jitter Light */}
       <pointLight 
         ref={pointLightRef}
         position={[0, 0, 0]} 
@@ -94,45 +101,38 @@ function LogoMeshes() {
         color="#88ccff" 
       />
 
-      {/* Layer 1: Dark Metal Outer Sphere */}
       <primitive object={outerGLTF.scene} ref={outerRef} position={[0, 0, 0]} />
-
-      {/* Layer 2: Silver Metal Middle Shell */}
       <primitive object={inner1GLTF.scene} ref={inner1Ref} position={[0, 0, 0]} />
 
-      {/* Layer 3: Swirling Plasma Image Orb. 
-          AdditiveBlending strips away the black background instantly, 
-          leaving pure glowing blue magic mapped to a 3D sphere! */}
-      <mesh ref={plasmaOrbRef} position={[0, 0, 0]}>
-        {/* Adjusted scale to fit neatly inside the silver housing */}
-        <sphereGeometry args={[0.85, 64, 64]} />
-        <meshBasicMaterial 
-          map={plasmaTexture} 
-          transparent={true} 
-          blending={THREE.AdditiveBlending} 
-          depthWrite={false}
-          side={THREE.DoubleSide} 
-        />
+      {/* Layer 3: Intersecting Energy Strands (Native 3D Torus Knots)
+          This totally replaces the stretched image mapping and uses true 3D geometry
+          to create glowing swirling plasma fields that look premium and high-end. */}
+      
+      {/* Inner swirling plasma strand */}
+      <mesh ref={knot1Ref} material={plasmaStringMaterial} scale={[0.8, 0.8, 0.8]}>
+        {/* Radius, Tube thickness, Tube segments (smoothness), Radial segments, p, q (knot complexity) */}
+        <torusKnotGeometry args={[0.5, 0.05, 128, 16, 3, 5]} />
       </mesh>
 
-      {/* Rising Blue Embers / Fire Ash */}
+      {/* Outer pulsing plasma strand */}
+      <mesh ref={knot2Ref} material={plasmaStringMaterial} scale={[0.9, 0.9, 0.9]}>
+        <torusKnotGeometry args={[0.45, 0.03, 150, 16, 4, 7]} />
+      </mesh>
+
       <Sparkles count={200} scale={2.5} size={2} speed={0.4} opacity={0.8} color="#88ccff" />
 
     </group>
   );
 }
 
-// Pre-load the gltf models and the texture image
 useGLTF.preload('/assets/outer_sphere.glb');
 useGLTF.preload('/assets/inner_1.glb');
-useTexture.preload('/assets/plasma.jpg');
 
 export default function DodecahedronLogo() {
   return (
     <>
       <Environment preset="city" />
 
-      {/* Dimmed external lights so the internal center light pops more */}
       <directionalLight position={[5, 10, 5]} intensity={0.5} color="#ffffff" />
       <directionalLight position={[-5, -10, -5]} intensity={0.5} color="#DFFF00" />
       <ambientLight intensity={0.2} />
