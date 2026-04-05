@@ -35,7 +35,7 @@ function LogoMeshes() {
   });
 
   return (
-    <group scale={1.5}>
+    <group scale={18}>
       {/* Outer Sphere */}
       <primitive 
         object={outerGLTF.scene} 
