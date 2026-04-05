@@ -45,18 +45,20 @@ function LogoMeshes() {
       });
     }
 
-    // 3. Center Core (inner 3): Nuclear Fusion Fire Glow
+    // 3. Center Core (inner 3): Plasma Energy Orb (Frothy Blue Fire)
     if (inner3GLTF.scene) {
       inner3GLTF.scene.traverse((child) => {
         if (child.isMesh) {
           child.material = new THREE.MeshStandardMaterial({
-            color: '#ffffff',         // Frothy white core
-            emissive: '#2288ff',      // Hot blue/white fire glow
-            emissiveIntensity: 4.0,   
-            metalness: 0.1,           
+            color: '#002244',         // Darker base to contrast the intense blending
+            emissive: '#1188ff',      // Electric plasma blue
+            emissiveIntensity: 3.0,   
+            metalness: 0.0,           
             roughness: 1.0,           
             transparent: true,
-            opacity: 0.9              
+            opacity: 0.5,             // Foamy translucency
+            depthWrite: false,        // Allows overlapping geometry to visually blend
+            blending: THREE.AdditiveBlending // THE MAGIC plasma/energy wisps multiplier
           });
           child.material.needsUpdate = true;
         }
