@@ -104,7 +104,7 @@ function LogoMeshes() {
   });
 
   return (
-    <group scale={50}>
+    <group scale={100}>
       
       {/* Dynamic Pulsing Light Source from the center */}
       <pointLight 
