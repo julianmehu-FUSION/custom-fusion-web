@@ -27,12 +27,55 @@ function App() {
       <section id="work" className="portfolio">
         <h2>Collections</h2>
         <div className="grid">
-          <div className="card"><h3>Torus</h3></div>
-          <div className="card"><h3>Print</h3></div>
-          <div className="card"><h3>Float</h3></div>
-          <div className="card"><h3>Line</h3></div>
-          <div className="card"><h3>Industrial</h3></div>
-          <div className="card"><h3>Architecture</h3></div>
+
+          <div className="card">
+            <div className="card-image" style={{backgroundImage: "url('/assets/float.jpg')"}}></div>
+            <div className="card-overlay">
+              <h3>Float</h3>
+              <p>Minimalist structural design in a high-end apartment.</p>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-image" style={{backgroundImage: "url('/assets/torus.jpg')"}}></div>
+            <div className="card-overlay">
+              <h3>Torus</h3>
+              <p>Sculptural circular design precision milled.</p>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-image" style={{backgroundImage: "url('/assets/print.jpg')"}}></div>
+            <div className="card-overlay">
+              <h3>Print</h3>
+              <p>Black & gold multi-layered architectural build.</p>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-image" style={{backgroundImage: "url('/assets/lamp.jpg')"}}></div>
+            <div className="card-overlay">
+              <h3>Geo</h3>
+              <p>Abstract structured glow and raw components.</p>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-image" style={{backgroundImage: "url('/assets/maze.jpg')"}}></div>
+            <div className="card-overlay">
+              <h3>Architecture</h3>
+              <p>Intense structural geometry and cinematic styling.</p>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-image" style={{backgroundImage: "url('/assets/industrial.jpg')"}}></div>
+            <div className="card-overlay">
+              <h3>Industrial</h3>
+              <p>Precision-milled modern utility and function.</p>
+            </div>
+          </div>
+
         </div>
       </section>
     </div>
