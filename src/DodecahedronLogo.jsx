@@ -1,20 +1,21 @@
 import React, { useRef, useEffect, Suspense } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Environment, Float, useGLTF, MeshDistortMaterial, Sparkles } from '@react-three/drei';
+import { Environment, Float, useGLTF, useTexture, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 
 function LogoMeshes() {
   const outerRef = useRef();
   const inner1Ref = useRef(); // The silver metal object
-  const inner3Ref = useRef(); // The blue energy orb
-  const flameRef = useRef(); // The procedural aura of flames
+  const plasmaOrbRef = useRef(); // The swirling plasma orb
   const pointLightRef = useRef(); // To pulse the light emit
 
   const outerGLTF = useGLTF('/assets/outer_sphere.glb');
   const inner1GLTF = useGLTF('/assets/inner_1.glb');
-  const inner3GLTF = useGLTF('/assets/inner_3.glb');
+  
+  // Load the exact blue swirling smoke image the user provided
+  const plasmaTexture = useTexture('/assets/plasma.jpg');
 
-  // Override materials on load
+  // Override materials on the CAD geometry
   useEffect(() => {
     // 1. Outer Sphere: Dark Metal
     if (outerGLTF.scene) {
@@ -45,28 +46,9 @@ function LogoMeshes() {
         }
       });
     }
+  }, [outerGLTF, inner1GLTF]);
 
-    // 3. Center Core (inner 3): Plasma Energy Orb (Frothy Blue Fire)
-    if (inner3GLTF.scene) {
-      inner3GLTF.scene.traverse((child) => {
-        if (child.isMesh) {
-          child.material = new THREE.MeshStandardMaterial({
-            color: '#001133',         // Dark solid base
-            emissive: '#1188ff',      // Bright blue cracks/emission
-            emissiveIntensity: 2.0,   
-            metalness: 0.5,           
-            roughness: 0.2,           
-            transparent: true,
-            opacity: 0.9,
-            depthWrite: true          // Restored solid depth so it acts as the solid reactor core
-          });
-          child.material.needsUpdate = true;
-        }
-      });
-    }
-  }, [outerGLTF, inner1GLTF, inner3GLTF]);
-
-  // Rotations + Pulsing Energy Animation
+  // Physics animation loop
   useFrame((state, delta) => {
     // Spin outer shell slowly
     if (outerRef.current) {
@@ -80,29 +62,16 @@ function LogoMeshes() {
       inner1Ref.current.rotation.y -= delta * 0.2;
     }
 
-    // Spin and violently pulse the nuclear fusion fire core
-    if (inner3Ref.current) {
-      inner3Ref.current.rotation.x -= delta * 0.8; // Spin faster
-      inner3Ref.current.rotation.y += delta * 1.2;
+    // Spin the new plasma orb texture drastically to create a vortex
+    if (plasmaOrbRef.current) {
+      plasmaOrbRef.current.rotation.y += delta * 1.5;
+      plasmaOrbRef.current.rotation.z += delta * 0.2;
       
-      // Calculate a chaotic, flickering pulse using multiple high-frequency sine/cosine waves
+      // Jitter the physical size of the plasma slightly so it feels like living energy
       const t = state.clock.elapsedTime;
-      const flicker = Math.sin(t * 15) * 0.5 + Math.cos(t * 23) * 0.5; // Chaotic [-1, 1] range
-      const pulse = 1 + (flicker * 0.08); // Jitter physical size
-      inner3Ref.current.scale.set(pulse, pulse, pulse);
-      
-      // Flicker the emissive intensity like a volatile burning star
-      inner3GLTF.scene.traverse((child) => {
-        if (child.isMesh && child.material.emissiveIntensity !== undefined) {
-          child.material.emissiveIntensity = 2.0 + (flicker * 1.0);
-        }
-      });
-    }
-
-    // Spin the boiling procedural fire shell
-    if (flameRef.current) {
-      flameRef.current.rotation.y -= delta * 2.0;
-      flameRef.current.rotation.x += delta * 1.0;
+      const flicker = Math.sin(t * 15) * 0.5 + Math.cos(t * 23) * 0.5;
+      const scale = 1 + (flicker * 0.05);
+      plasmaOrbRef.current.scale.set(scale, scale, scale);
     }
 
     // Flicker the actual PointLight to cast chaotic fire lighting onto the metal cage
@@ -131,22 +100,18 @@ function LogoMeshes() {
       {/* Layer 2: Silver Metal Middle Shell */}
       <primitive object={inner1GLTF.scene} ref={inner1Ref} position={[0, 0, 0]} />
 
-      {/* Layer 3: Solid Cracked Center Core */}
-      <primitive object={inner3GLTF.scene} ref={inner3Ref} position={[0, 0, 0]} />
-
-      {/* Layer 4: Procedural Raging Blue Flame Shell */}
-      <mesh ref={flameRef} scale={[1.1, 1.1, 1.1]}>
-        <sphereGeometry args={[1, 64, 64]} />
-        <MeshDistortMaterial 
-          color="#001133"
-          emissive="#22aaff"
-          emissiveIntensity={4.0}
-          transparent={true}
-          opacity={0.6}
+      {/* Layer 3: Swirling Plasma Image Orb. 
+          AdditiveBlending strips away the black background instantly, 
+          leaving pure glowing blue magic mapped to a 3D sphere! */}
+      <mesh ref={plasmaOrbRef} position={[0, 0, 0]}>
+        {/* Adjusted scale to fit neatly inside the silver housing */}
+        <sphereGeometry args={[0.85, 64, 64]} />
+        <meshBasicMaterial 
+          map={plasmaTexture} 
+          transparent={true} 
+          blending={THREE.AdditiveBlending} 
           depthWrite={false}
-          blending={THREE.AdditiveBlending}
-          distort={1.0} // Extreme distortion to create licking flames stretching outwards
-          speed={6}     // Rapid boiling foam speed
+          side={THREE.DoubleSide} 
         />
       </mesh>
 
@@ -157,10 +122,10 @@ function LogoMeshes() {
   );
 }
 
-// Pre-load the gltf models
+// Pre-load the gltf models and the texture image
 useGLTF.preload('/assets/outer_sphere.glb');
 useGLTF.preload('/assets/inner_1.glb');
-useGLTF.preload('/assets/inner_3.glb');
+useTexture.preload('/assets/plasma.jpg');
 
 export default function DodecahedronLogo() {
   return (
