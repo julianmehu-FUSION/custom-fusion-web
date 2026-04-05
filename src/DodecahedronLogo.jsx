@@ -1,12 +1,13 @@
 import React, { useRef, useEffect, Suspense } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Environment, Float, useGLTF } from '@react-three/drei';
+import { Environment, Float, useGLTF, MeshDistortMaterial, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 
 function LogoMeshes() {
   const outerRef = useRef();
   const inner1Ref = useRef(); // The silver metal object
   const inner3Ref = useRef(); // The blue energy orb
+  const flameRef = useRef(); // The procedural aura of flames
   const pointLightRef = useRef(); // To pulse the light emit
 
   const outerGLTF = useGLTF('/assets/outer_sphere.glb');
@@ -50,15 +51,14 @@ function LogoMeshes() {
       inner3GLTF.scene.traverse((child) => {
         if (child.isMesh) {
           child.material = new THREE.MeshStandardMaterial({
-            color: '#002244',         // Darker base to contrast the intense blending
-            emissive: '#1188ff',      // Electric plasma blue
-            emissiveIntensity: 3.0,   
-            metalness: 0.0,           
-            roughness: 1.0,           
+            color: '#001133',         // Dark solid base
+            emissive: '#1188ff',      // Bright blue cracks/emission
+            emissiveIntensity: 2.0,   
+            metalness: 0.5,           
+            roughness: 0.2,           
             transparent: true,
-            opacity: 0.5,             // Foamy translucency
-            depthWrite: false,        // Allows overlapping geometry to visually blend
-            blending: THREE.AdditiveBlending // THE MAGIC plasma/energy wisps multiplier
+            opacity: 0.9,
+            depthWrite: true          // Restored solid depth so it acts as the solid reactor core
           });
           child.material.needsUpdate = true;
         }
@@ -94,9 +94,15 @@ function LogoMeshes() {
       // Flicker the emissive intensity like a volatile burning star
       inner3GLTF.scene.traverse((child) => {
         if (child.isMesh && child.material.emissiveIntensity !== undefined) {
-          child.material.emissiveIntensity = 3.0 + (flicker * 1.5);
+          child.material.emissiveIntensity = 2.0 + (flicker * 1.0);
         }
       });
+    }
+
+    // Spin the boiling procedural fire shell
+    if (flameRef.current) {
+      flameRef.current.rotation.y -= delta * 2.0;
+      flameRef.current.rotation.x += delta * 1.0;
     }
 
     // Flicker the actual PointLight to cast chaotic fire lighting onto the metal cage
@@ -125,8 +131,27 @@ function LogoMeshes() {
       {/* Layer 2: Silver Metal Middle Shell */}
       <primitive object={inner1GLTF.scene} ref={inner1Ref} position={[0, 0, 0]} />
 
-      {/* Layer 3: Blue Pulsing Energy Core */}
+      {/* Layer 3: Solid Cracked Center Core */}
       <primitive object={inner3GLTF.scene} ref={inner3Ref} position={[0, 0, 0]} />
+
+      {/* Layer 4: Procedural Raging Blue Flame Shell */}
+      <mesh ref={flameRef} scale={[1.1, 1.1, 1.1]}>
+        <sphereGeometry args={[1, 64, 64]} />
+        <MeshDistortMaterial 
+          color="#001133"
+          emissive="#22aaff"
+          emissiveIntensity={4.0}
+          transparent={true}
+          opacity={0.6}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+          distort={1.0} // Extreme distortion to create licking flames stretching outwards
+          speed={6}     // Rapid boiling foam speed
+        />
+      </mesh>
+
+      {/* Rising Blue Embers / Fire Ash */}
+      <Sparkles count={200} scale={2.5} size={2} speed={0.4} opacity={0.8} color="#88ccff" />
 
     </group>
   );
