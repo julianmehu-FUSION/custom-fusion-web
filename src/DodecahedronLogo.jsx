@@ -50,10 +50,10 @@ function LogoMeshes() {
       inner3GLTF.scene.traverse((child) => {
         if (child.isMesh) {
           child.material = new THREE.MeshStandardMaterial({
-            color: '#ff2200',         
-            emissive: '#ff7700',      // Hot fiery orange/yellow glow
-            emissiveIntensity: 3.0,   
-            metalness: 0.0,           
+            color: '#ffffff',         // Frothy white core
+            emissive: '#2288ff',      // Hot blue/white fire glow
+            emissiveIntensity: 4.0,   
+            metalness: 0.1,           
             roughness: 1.0,           
             transparent: true,
             opacity: 0.9              
@@ -114,7 +114,7 @@ function LogoMeshes() {
         position={[0, 0, 0]} 
         intensity={20} 
         distance={25} 
-        color="#ff7700" 
+        color="#88ccff" 
       />
 
       {/* Layer 1: Dark Metal Outer Sphere */}
