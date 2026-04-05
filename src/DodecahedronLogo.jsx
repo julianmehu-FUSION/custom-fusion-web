@@ -119,8 +119,6 @@ function LogoMeshes() {
         <torusKnotGeometry args={[0.45, 0.03, 150, 16, 4, 7]} />
       </mesh>
 
-      <Sparkles count={200} scale={2.5} size={2} speed={0.4} opacity={0.8} color="#88ccff" />
-
     </group>
   );
 }
