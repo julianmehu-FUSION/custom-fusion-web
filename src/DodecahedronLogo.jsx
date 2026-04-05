@@ -25,28 +25,37 @@ export default function DodecahedronLogo() {
 
       <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
         
-        {/* Outer Geometric Frame (Simulating the complex geometric struts) */}
-        <mesh ref={outerRef}>
-          <icosahedronGeometry args={[2.5, 1]} />
-          <meshStandardMaterial 
-            color="#ffffff"
-            roughness={0.1}     
-            metalness={1.0}      
-            envMapIntensity={2}  
-            wireframe={true}     
-          />
-        </mesh>
+        {/* Outer Geometric Frame (Thick Atomic Chrome Rings to solve skinny wireframes) */}
+        <group ref={outerRef}>
+          {[
+            [0, 0, 0],
+            [Math.PI / 2, 0, 0],
+            [0, Math.PI / 2, 0],
+            [Math.PI / 4, Math.PI / 4, 0],
+            [-Math.PI / 4, Math.PI / 4, 0]
+          ].map((rot, i) => (
+            <mesh key={i} rotation={rot}>
+              <torusGeometry args={[2.5, 0.15, 16, 100]} />
+              <meshStandardMaterial 
+                color="#ffffff"
+                roughness={0.05}     
+                metalness={1.0}      
+                envMapIntensity={2.5}  
+              />
+            </mesh>
+          ))}
+        </group>
 
-        {/* Inner Organic 'Fusion' Core (Simulating the complex inner metallic liquid look) */}
+        {/* Inner Organic 'Fusion' Core (Tiny Molten Neutron) */}
         <mesh ref={innerRef}>
-          <sphereGeometry args={[1.8, 64, 64]} />
+          <sphereGeometry args={[0.6, 64, 64]} />
           <MeshDistortMaterial
-            color="#b0c4de"      /* Slightly blue/silver tint */
+            color="#b0c4de"      
             roughness={0.0}
             metalness={1.0}
             envMapIntensity={3}
-            distort={0.4}        /* Creates the organic wobbly shape */
-            speed={2}            /* Undulation speed */
+            distort={0.4}        
+            speed={4}            
           />
         </mesh>
 
