@@ -18,13 +18,19 @@ function LogoMeshes() {
     if (outerGLTF.scene) {
       outerGLTF.scene.traverse((child) => {
         if (child.isMesh) {
-          child.material = new THREE.MeshStandardMaterial({
-            color: '#1a1a1c', 
-            metalness: 1.0,
-            roughness: 0.15,
-            envMapIntensity: 2
-          });
-          child.material.needsUpdate = true;
+          // Rhino and CAD tools often export hidden low-poly bounding boxes or ground planes invisibly. 
+          // By hiding objects with very few vertices (< 100), we strip out these giant box artifacts automatically.
+          if (child.geometry && child.geometry.attributes.position.count < 100) {
+            child.visible = false;
+          } else {
+            child.material = new THREE.MeshStandardMaterial({
+              color: '#1a1a1c', 
+              metalness: 1.0,
+              roughness: 0.15,
+              envMapIntensity: 2
+            });
+            child.material.needsUpdate = true;
+          }
         }
       });
     }
@@ -32,13 +38,17 @@ function LogoMeshes() {
     if (inner1GLTF.scene) {
       inner1GLTF.scene.traverse((child) => {
         if (child.isMesh) {
-          child.material = new THREE.MeshStandardMaterial({
-            color: '#ffffff', 
-            metalness: 1.0,
-            roughness: 0.05,
-            envMapIntensity: 3
-          });
-          child.material.needsUpdate = true;
+          if (child.geometry && child.geometry.attributes.position.count < 100) {
+            child.visible = false;
+          } else {
+            child.material = new THREE.MeshStandardMaterial({
+              color: '#ffffff', 
+              metalness: 1.0,
+              roughness: 0.05,
+              envMapIntensity: 3
+            });
+            child.material.needsUpdate = true;
+          }
         }
       });
     }
