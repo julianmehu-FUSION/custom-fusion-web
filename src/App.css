@@ -134,54 +134,94 @@
 
 /* Portfolio Section */
 .portfolio {
-  padding: 5rem 5%;
+  padding: 8rem 5%;
   background: var(--surface-color);
 }
 
 .portfolio h2 {
   font-family: var(--font-display);
-  font-size: 2.5rem;
+  font-size: 3rem;
   text-transform: uppercase;
-  margin-bottom: 3rem;
-  border-left: 4px solid var(--primary-color);
-  padding-left: 1rem;
+  margin-bottom: 4rem;
+  border-left: 5px solid var(--primary-color);
+  padding-left: 1.5rem;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 3rem;
 }
 
+/* Card Visual Animations */
 .card {
-  background: var(--surface-color-light);
-  height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.02);
-  transition: all 0.4s ease;
+  position: relative;
+  height: 500px;
+  overflow: hidden;
+  border-radius: 4px;
   cursor: pointer;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.card:hover {
-  transform: translateY(-10px);
-  border-color: rgba(223, 255, 0, 0.3);
-  box-shadow: 0 15px 40px rgba(223, 255, 0, 0.1);
+.card-image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.card h3 {
+.card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 3rem;
+  transition: all 0.4s ease;
+}
+
+.card-overlay h3 {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 2rem;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--text-muted);
-  transition: color 0.3s ease;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  transform: translateY(20px);
+  transition: transform 0.4s ease, color 0.3s ease;
 }
 
-.card:hover h3 {
+.card-overlay p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: transform 0.4s ease 0.1s, opacity 0.4s ease 0.1s;
+}
+
+/* Hover Effects representing the requested stunning visual animations */
+.card:hover .card-image {
+  transform: scale(1.1); /* Slow structural zoom */
+}
+
+.card:hover .card-overlay {
+  background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%);
+}
+
+.card:hover .card-overlay h3 {
   color: var(--primary-color);
+  transform: translateY(0);
+}
+
+.card:hover .card-overlay p {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Responsive */
