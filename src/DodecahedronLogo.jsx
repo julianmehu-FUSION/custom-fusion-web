@@ -45,19 +45,18 @@ function LogoMeshes() {
       });
     }
 
-    // 3. Center Core (inner 3): Glowing Blue Energy Source
-    // We make it highly emissive rather than metallic so it looks like pure energy
+    // 3. Center Core (inner 3): Nuclear Fusion Fire Glow
     if (inner3GLTF.scene) {
       inner3GLTF.scene.traverse((child) => {
         if (child.isMesh) {
           child.material = new THREE.MeshStandardMaterial({
-            color: '#0055ff',         
-            emissive: '#00ccff',      // Brilliant neon blue glow
-            emissiveIntensity: 2.0,   // Extremely bright
-            metalness: 0.0,           // Energy isn't metallic
-            roughness: 1.0,           // Non-reflective, just glowing
+            color: '#ff2200',         
+            emissive: '#ff7700',      // Hot fiery orange/yellow glow
+            emissiveIntensity: 3.0,   
+            metalness: 0.0,           
+            roughness: 1.0,           
             transparent: true,
-            opacity: 0.9              // Slight translucency for plasma effect
+            opacity: 0.9              
           });
           child.material.needsUpdate = true;
         }
@@ -79,40 +78,43 @@ function LogoMeshes() {
       inner1Ref.current.rotation.y -= delta * 0.2;
     }
 
-    // Spin and pulse the blue energy core
+    // Spin and violently pulse the nuclear fusion fire core
     if (inner3Ref.current) {
-      inner3Ref.current.rotation.x -= delta * 0.5;
-      inner3Ref.current.rotation.y += delta * 0.8;
+      inner3Ref.current.rotation.x -= delta * 0.8; // Spin faster
+      inner3Ref.current.rotation.y += delta * 1.2;
       
-      // Calculate a pulsing wave using Math.sin based on elapsed time
-      // This will make the energy core expand and contract slightly like a beating heart
-      const pulse = 1 + Math.sin(state.clock.elapsedTime * 4) * 0.05;
+      // Calculate a chaotic, flickering pulse using multiple high-frequency sine/cosine waves
+      const t = state.clock.elapsedTime;
+      const flicker = Math.sin(t * 15) * 0.5 + Math.cos(t * 23) * 0.5; // Chaotic [-1, 1] range
+      const pulse = 1 + (flicker * 0.08); // Jitter physical size
       inner3Ref.current.scale.set(pulse, pulse, pulse);
       
-      // Also pulse the emissive intensity of the material itself for a realistic glow flash
+      // Flicker the emissive intensity like a volatile burning star
       inner3GLTF.scene.traverse((child) => {
         if (child.isMesh && child.material.emissiveIntensity !== undefined) {
-          child.material.emissiveIntensity = 1.5 + Math.sin(state.clock.elapsedTime * 4) * 0.5;
+          child.material.emissiveIntensity = 3.0 + (flicker * 1.5);
         }
       });
     }
 
-    // Pulse the actual PointLight to match the geometry
+    // Flicker the actual PointLight to cast chaotic fire lighting onto the metal cage
     if (pointLightRef.current) {
-      pointLightRef.current.intensity = 15 + Math.sin(state.clock.elapsedTime * 4) * 5;
+      const t = state.clock.elapsedTime;
+      const flicker = Math.sin(t * 15) * 0.5 + Math.cos(t * 23) * 0.5;
+      pointLightRef.current.intensity = 20 + (flicker * 10);
     }
   });
 
   return (
     <group scale={100}>
       
-      {/* Dynamic Pulsing Light Source from the center */}
+      {/* Nuclear Fire Dynamic Jitter Light from the center */}
       <pointLight 
         ref={pointLightRef}
         position={[0, 0, 0]} 
-        intensity={15} 
-        distance={20} 
-        color="#00ccff" 
+        intensity={20} 
+        distance={25} 
+        color="#ff7700" 
       />
 
       {/* Layer 1: Dark Metal Outer Sphere */}
