@@ -5,8 +5,9 @@ import * as THREE from 'three';
 
 function LogoMeshes() {
   const outerRef = useRef();
-  const inner1Ref = useRef();
-  const inner3Ref = useRef();
+  const inner1Ref = useRef(); // The silver metal object
+  const inner3Ref = useRef(); // The blue energy orb
+  const pointLightRef = useRef(); // To pulse the light emit
 
   const outerGLTF = useGLTF('/assets/outer_sphere.glb');
   const inner1GLTF = useGLTF('/assets/inner_1.glb');
@@ -14,11 +15,12 @@ function LogoMeshes() {
 
   // Override materials on load
   useEffect(() => {
+    // 1. Outer Sphere: Dark Metal
     if (outerGLTF.scene) {
       outerGLTF.scene.traverse((child) => {
         if (child.isMesh) {
           child.material = new THREE.MeshStandardMaterial({
-            color: '#2a2a2c', // Glossy Zinc
+            color: '#1a1a1c', // Very Dark Metal
             metalness: 1.0,
             roughness: 0.15,
             envMapIntensity: 2
@@ -28,62 +30,98 @@ function LogoMeshes() {
       });
     }
 
-    // Give the inner cores the requested glowing blue orb look
-    const glowingBlueMaterial = new THREE.MeshStandardMaterial({
-      color: '#0055ff',         // Deep Blue Base
-      emissive: '#00ccff',      // Glowing light blue
-      emissiveIntensity: 0.5,   // Soft glow
-      metalness: 0.8,
-      roughness: 0.1,
-      envMapIntensity: 2
-    });
-
+    // 2. Middle Structure (inner 1): Silver Metal
     if (inner1GLTF.scene) {
       inner1GLTF.scene.traverse((child) => {
         if (child.isMesh) {
-          child.material = glowingBlueMaterial;
+          child.material = new THREE.MeshStandardMaterial({
+            color: '#ffffff', // Pure Silver
+            metalness: 1.0,
+            roughness: 0.05,
+            envMapIntensity: 3
+          });
           child.material.needsUpdate = true;
         }
       });
     }
 
+    // 3. Center Core (inner 3): Glowing Blue Energy Source
+    // We make it highly emissive rather than metallic so it looks like pure energy
     if (inner3GLTF.scene) {
       inner3GLTF.scene.traverse((child) => {
         if (child.isMesh) {
-          child.material = glowingBlueMaterial;
+          child.material = new THREE.MeshStandardMaterial({
+            color: '#0055ff',         
+            emissive: '#00ccff',      // Brilliant neon blue glow
+            emissiveIntensity: 2.0,   // Extremely bright
+            metalness: 0.0,           // Energy isn't metallic
+            roughness: 1.0,           // Non-reflective, just glowing
+            transparent: true,
+            opacity: 0.9              // Slight translucency for plasma effect
+          });
           child.material.needsUpdate = true;
         }
       });
     }
-
   }, [outerGLTF, inner1GLTF, inner3GLTF]);
 
+  // Rotations + Pulsing Energy Animation
   useFrame((state, delta) => {
+    // Spin outer shell slowly
     if (outerRef.current) {
       outerRef.current.rotation.x -= delta * 0.1;
       outerRef.current.rotation.y += delta * 0.15;
     }
+    
+    // Spin silver middle structure counter-directionally
     if (inner1Ref.current) {
-      inner1Ref.current.rotation.x += delta * 0.4;
-      inner1Ref.current.rotation.y -= delta * 0.3;
+      inner1Ref.current.rotation.x += delta * 0.3;
+      inner1Ref.current.rotation.y -= delta * 0.2;
     }
+
+    // Spin and pulse the blue energy core
     if (inner3Ref.current) {
-      inner3Ref.current.rotation.x -= delta * 0.2;
-      inner3Ref.current.rotation.y += delta * 0.5;
+      inner3Ref.current.rotation.x -= delta * 0.5;
+      inner3Ref.current.rotation.y += delta * 0.8;
+      
+      // Calculate a pulsing wave using Math.sin based on elapsed time
+      // This will make the energy core expand and contract slightly like a beating heart
+      const pulse = 1 + Math.sin(state.clock.elapsedTime * 4) * 0.05;
+      inner3Ref.current.scale.set(pulse, pulse, pulse);
+      
+      // Also pulse the emissive intensity of the material itself for a realistic glow flash
+      inner3GLTF.scene.traverse((child) => {
+        if (child.isMesh && child.material.emissiveIntensity !== undefined) {
+          child.material.emissiveIntensity = 1.5 + Math.sin(state.clock.elapsedTime * 4) * 0.5;
+        }
+      });
+    }
+
+    // Pulse the actual PointLight to match the geometry
+    if (pointLightRef.current) {
+      pointLightRef.current.intensity = 15 + Math.sin(state.clock.elapsedTime * 4) * 5;
     }
   });
 
   return (
     <group scale={50}>
       
-      {/* Light source coming directly from the center globe */}
-      <pointLight position={[0, 0, 0]} intensity={15} distance={10} color="#00aaff" />
+      {/* Dynamic Pulsing Light Source from the center */}
+      <pointLight 
+        ref={pointLightRef}
+        position={[0, 0, 0]} 
+        intensity={15} 
+        distance={20} 
+        color="#00ccff" 
+      />
 
-      {/* Outer Sphere */}
+      {/* Layer 1: Dark Metal Outer Sphere */}
       <primitive object={outerGLTF.scene} ref={outerRef} position={[0, 0, 0]} />
 
-      {/* Inner Cores */}
+      {/* Layer 2: Silver Metal Middle Shell */}
       <primitive object={inner1GLTF.scene} ref={inner1Ref} position={[0, 0, 0]} />
+
+      {/* Layer 3: Blue Pulsing Energy Core */}
       <primitive object={inner3GLTF.scene} ref={inner3Ref} position={[0, 0, 0]} />
 
     </group>
@@ -101,8 +139,8 @@ export default function DodecahedronLogo() {
       <Environment preset="city" />
 
       {/* Dimmed external lights so the internal center light pops more */}
-      <directionalLight position={[5, 10, 5]} intensity={1} color="#ffffff" />
-      <directionalLight position={[-5, -10, -5]} intensity={1} color="#DFFF00" />
+      <directionalLight position={[5, 10, 5]} intensity={0.5} color="#ffffff" />
+      <directionalLight position={[-5, -10, -5]} intensity={0.5} color="#DFFF00" />
       <ambientLight intensity={0.2} />
 
       <Suspense fallback={null}>
