@@ -1,65 +1,86 @@
-import React, { useRef } from 'react';
+import React, { useRef, Suspense } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Environment, Float, MeshDistortMaterial } from '@react-three/drei';
-import * as THREE from 'three';
+import { Environment, Float, useGLTF } from '@react-three/drei';
 
-export default function DodecahedronLogo() {
+function LogoMeshes() {
   const outerRef = useRef();
-  const innerRef = useRef();
+  const inner1Ref = useRef();
+  const inner3Ref = useRef();
+  const textRef = useRef();
 
+  // Load the actual GLTF models from the public/assets directory
+  const outerGLTF = useGLTF('/assets/outer_sphere.glb');
+  const inner1GLTF = useGLTF('/assets/inner_1.glb');
+  const inner3GLTF = useGLTF('/assets/inner_3.glb');
+  const textGLTF = useGLTF('/assets/text.glb');
+
+  // Rotate each object at different speeds/directions
   useFrame((state, delta) => {
-    outerRef.current.rotation.x -= delta * 0.1;
-    outerRef.current.rotation.y += delta * 0.15;
-    innerRef.current.rotation.x += delta * 0.2;
-    innerRef.current.rotation.y -= delta * 0.1;
+    if (outerRef.current) {
+      outerRef.current.rotation.x -= delta * 0.1;
+      outerRef.current.rotation.y += delta * 0.15;
+    }
+    if (inner1Ref.current) {
+      inner1Ref.current.rotation.x += delta * 0.4;
+      inner1Ref.current.rotation.y -= delta * 0.3;
+    }
+    if (inner3Ref.current) {
+      inner3Ref.current.rotation.x -= delta * 0.2;
+      inner3Ref.current.rotation.y += delta * 0.5;
+    }
+    if (textRef.current) {
+      // Very slow, subtle text hover/rotation
+      textRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
+    }
   });
 
+  return (
+    <group scale={1.5}>
+      {/* Outer Sphere */}
+      <primitive 
+        object={outerGLTF.scene} 
+        ref={outerRef} 
+        position={[0, 0, 0]}
+      />
+
+      {/* Inner Cores */}
+      <primitive 
+        object={inner1GLTF.scene} 
+        ref={inner1Ref} 
+        position={[0, 0, 0]}
+      />
+      <primitive 
+        object={inner3GLTF.scene} 
+        ref={inner3Ref} 
+        position={[0, 0, 0]}
+      />
+
+      {/* Text Model */}
+      <primitive 
+        object={textGLTF.scene} 
+        ref={textRef} 
+        position={[0, 0, 0]}
+      />
+    </group>
+  );
+}
+
+export default function DodecahedronLogo() {
   return (
     <>
       <Environment preset="city" />
 
-      {/* Dramatic main light */}
+      {/* Dramatic main lighting */}
       <directionalLight position={[5, 10, 5]} intensity={3} color="#ffffff" />
       <directionalLight position={[-5, -10, -5]} intensity={2} color="#DFFF00" />
       <ambientLight intensity={0.5} />
 
-      <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
-        
-        {/* Outer Geometric Frame (Thick Atomic Chrome Rings to solve skinny wireframes) */}
-        <group ref={outerRef}>
-          {[
-            [0, 0, 0],
-            [Math.PI / 2, 0, 0],
-            [0, Math.PI / 2, 0],
-            [Math.PI / 4, Math.PI / 4, 0],
-            [-Math.PI / 4, Math.PI / 4, 0]
-          ].map((rot, i) => (
-            <mesh key={i} rotation={rot}>
-              <torusGeometry args={[2.5, 0.15, 16, 100]} />
-              <meshStandardMaterial 
-                color="#ffffff"
-                roughness={0.05}     
-                metalness={1.0}      
-                envMapIntensity={2.5}  
-              />
-            </mesh>
-          ))}
-        </group>
-
-        {/* Inner Organic 'Fusion' Core (Tiny Molten Neutron) */}
-        <mesh ref={innerRef}>
-          <sphereGeometry args={[0.6, 64, 64]} />
-          <MeshDistortMaterial
-            color="#b0c4de"      
-            roughness={0.0}
-            metalness={1.0}
-            envMapIntensity={3}
-            distort={0.4}        
-            speed={4}            
-          />
-        </mesh>
-
-      </Float>
+      {/* Wrap everything in Suspense so the site doesn't crash while CAD files load */}
+      <Suspense fallback={null}>
+        <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
+          <LogoMeshes />
+        </Float>
+      </Suspense>
     </>
   );
 }
