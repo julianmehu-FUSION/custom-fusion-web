@@ -14,6 +14,7 @@ function LogoMeshes() {
   const textGLTF = useGLTF('/assets/text.glb');
 
   // Override materials on load to enforce the Zinc/Silver aesthetics
+  /*
   React.useEffect(() => {
     outerGLTF.scene.traverse((child) => {
       if (child.isMesh) {
@@ -50,6 +51,8 @@ function LogoMeshes() {
       }
     });
   }, [outerGLTF, inner1GLTF, inner3GLTF, textGLTF]);
+  */
+
 
   useFrame((state, delta) => {
     if (outerRef.current) {
@@ -70,7 +73,7 @@ function LogoMeshes() {
   });
 
   return (
-    <group scale={28}>
+    <group scale={50}>
       
       {/* Light source coming directly from the center globe */}
       <pointLight position={[0, 0, 0]} intensity={15} distance={10} color="#e0f0ff" />
