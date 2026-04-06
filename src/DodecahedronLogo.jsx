@@ -1,12 +1,14 @@
 import React, { useRef, useEffect, Suspense } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Environment, Float, useGLTF } from '@react-three/drei';
+import { Environment, Float, useGLTF, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 
 function LogoMeshes() {
   const outerRef = useRef();
   const inner1Ref = useRef(); 
-  const inner3Ref = useRef(); 
+  const inner3Ref = useRef();
+  const knot1Ref = useRef(); 
+  const knot2Ref = useRef(); 
   const pointLightRef = useRef(); 
 
   const outerGLTF = useGLTF('/assets/outer_sphere.glb');
@@ -18,7 +20,7 @@ function LogoMeshes() {
     if (outerGLTF.scene) {
       outerGLTF.scene.traverse((child) => {
         if (child.isMesh) {
-          child.visible = true; // Ensure nothing is accidentally hidden
+          child.visible = true; 
           child.material = new THREE.MeshStandardMaterial({
             color: '#1a1a1c', 
             metalness: 1.0,
@@ -46,12 +48,12 @@ function LogoMeshes() {
       });
     }
 
-    // 3. Glowing Glassy Plasma Orb (inner 3 CAD)
+    // 3. Glowing Glassy Plasma Orb
     if (inner3GLTF.scene) {
       inner3GLTF.scene.traverse((child) => {
         if (child.isMesh) {
           child.visible = true;
-          // Upgrading to an elite MeshPhysicalMaterial to mimic true dense glowing energy plasma 
+          // MeshPhysicalMaterial to mimic dense glowing energy plasma
           child.material = new THREE.MeshPhysicalMaterial({
             color: '#00ccff',         // Base neon blue
             emissive: '#0055ff',      // Deep underlying glow
@@ -63,7 +65,7 @@ function LogoMeshes() {
             thickness: 2.0,           
             clearcoat: 1.0,           // Glossy plasma shell
             transparent: true,
-            opacity: 0.95
+            opacity: 0.8
           });
           child.material.needsUpdate = true;
         }
@@ -72,6 +74,8 @@ function LogoMeshes() {
   }, [outerGLTF, inner1GLTF, inner3GLTF]);
 
   useFrame((state, delta) => {
+    const t = state.clock.elapsedTime;
+
     // Spin outer shell
     if (outerRef.current) {
       outerRef.current.rotation.x -= delta * 0.1;
@@ -84,29 +88,48 @@ function LogoMeshes() {
       inner1Ref.current.rotation.y -= delta * 0.2;
     }
 
-    // Spin and pulse the glowing inner core
+    // Spin the glowing inner core erratically without pulsing scale
     if (inner3Ref.current) {
-      inner3Ref.current.rotation.x -= delta * 0.5;
-      inner3Ref.current.rotation.y += delta * 0.8;
+      inner3Ref.current.rotation.x -= delta * (2.0 + Math.sin(t * 10) * 1.5);
+      inner3Ref.current.rotation.y += delta * (3.0 + Math.cos(t * 15) * 2.0);
+      inner3Ref.current.rotation.z += delta * (1.5 + Math.sin(t * 22) * 1.0);
       
-      const t = state.clock.elapsedTime;
       const flicker = Math.sin(t * 15) * 0.5 + Math.cos(t * 23) * 0.5;
-      const scale = 1 + (flicker * 0.04);
-      inner3Ref.current.scale.set(scale, scale, scale);
-
       inner3GLTF.scene.traverse((child) => {
         if (child.isMesh && child.material.emissiveIntensity !== undefined) {
-          child.material.emissiveIntensity = 2.0 + (flicker * 2.0); // Flicker intensity violently
+          child.material.emissiveIntensity = 2.0 + (flicker * 2.0);
         }
       });
     }
 
+    // Spin chaotic energy knot layers seamlessly (NO scale heartbeat)
+    if (knot1Ref.current) {
+      knot1Ref.current.rotation.y += delta * 2.5;
+      knot1Ref.current.rotation.z += delta * 1.5;
+      knot1Ref.current.rotation.x += delta * (0.5 + Math.sin(t * 5));
+    }
+    if (knot2Ref.current) {
+      knot2Ref.current.rotation.x -= delta * 3.0;
+      knot2Ref.current.rotation.z -= delta * 2.5;
+      knot2Ref.current.rotation.y -= delta * (0.8 + Math.cos(t * 8));
+    }
+
     // Flicker internal light source casting on the silver shell
     if (pointLightRef.current) {
-      const t = state.clock.elapsedTime;
       const flicker = Math.sin(t * 15) * 0.5 + Math.cos(t * 23) * 0.5;
       pointLightRef.current.intensity = 20 + (flicker * 10);
     }
+  });
+
+  // A standalone material for the energy strands
+  const plasmaStringMaterial = new THREE.MeshStandardMaterial({
+    color: '#002244',
+    emissive: '#11aaff',
+    emissiveIntensity: 3.5,
+    transparent: true,
+    opacity: 0.7,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
   });
 
   return (
@@ -122,6 +145,18 @@ function LogoMeshes() {
       <primitive object={outerGLTF.scene} ref={outerRef} position={[0, 0, 0]} />
       <primitive object={inner1GLTF.scene} ref={inner1Ref} position={[0, 0, 0]} />
       <primitive object={inner3GLTF.scene} ref={inner3Ref} position={[0, 0, 0]} />
+
+      {/* Layer 3: Intersecting Energy Strands (Native 3D Torus Knots) */}
+      <mesh ref={knot1Ref} material={plasmaStringMaterial} scale={[0.8, 0.8, 0.8]}>
+        <torusKnotGeometry args={[0.5, 0.05, 128, 16, 3, 5]} />
+      </mesh>
+      <mesh ref={knot2Ref} material={plasmaStringMaterial} scale={[0.9, 0.9, 0.9]}>
+        <torusKnotGeometry args={[0.45, 0.03, 150, 16, 4, 7]} />
+      </mesh>
+
+      {/* Multi-layered scattered plasma particle effect */}
+      <Sparkles count={300} scale={1.8} size={2.5} speed={0.8} opacity={0.6} color="#00ccff" />
+      <Sparkles count={150} scale={2.0} size={1.5} speed={1.2} opacity={0.4} color="#DFFF00" />
     </group>
   );
 }
@@ -133,8 +168,7 @@ useGLTF.preload('/assets/inner_3.glb');
 export default function DodecahedronLogo() {
   return (
     <>
-      <Environment preset="city" />
-
+      <Environment preset="studio" background={false} />
       <directionalLight position={[5, 10, 5]} intensity={0.5} color="#ffffff" />
       <directionalLight position={[-5, -10, -5]} intensity={0.5} color="#DFFF00" />
       <ambientLight intensity={0.2} />
