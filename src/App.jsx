@@ -12,8 +12,8 @@ function App() {
           Custom&nbsp;<span>Fusion</span>
         </div>
         <ul className="nav-links">
-          <li><a href="#work">Work</a></li>
           <li><a href="#about">About</a></li>
+          <li><a href="#collections">Collections</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
       </nav>
@@ -31,7 +31,7 @@ function App() {
         </div>
       </header>
 
-      <section id="work" className="portfolio">
+      <section id="collections" className="portfolio">
         <h2>Collections</h2>
         <div className="grid">
 
