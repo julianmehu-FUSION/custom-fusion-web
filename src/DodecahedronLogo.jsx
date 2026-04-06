@@ -149,7 +149,7 @@ useGLTF.preload('/assets/inner_3.glb');
 export default function DodecahedronLogo() {
   return (
     <>
-      <Environment preset="studio" background={false} />
+
       <directionalLight position={[5, 10, 5]} intensity={0.5} color="#ffffff" />
       <directionalLight position={[-5, -10, -5]} intensity={0.5} color="#DFFF00" />
       <ambientLight intensity={0.2} />
