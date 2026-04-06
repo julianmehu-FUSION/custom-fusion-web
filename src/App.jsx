@@ -8,7 +8,7 @@ function App() {
     <div className="app-container">
       <nav className="navbar">
         <div className="logo">
-          <img src="/favicon.svg" alt="Custom Fusion Logo" style={{ width: '36px', marginRight: '12px' }} />
+          <img src="/logo.png" alt="Custom Fusion Logo" style={{ width: '36px', marginRight: '12px' }} />
           Custom&nbsp;<span>Fusion</span>
         </div>
         <ul className="nav-links">

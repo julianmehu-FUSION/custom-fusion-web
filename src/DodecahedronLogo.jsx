@@ -6,10 +6,8 @@ import * as THREE from 'three';
 function LogoMeshes() {
   const outerRef = useRef();
   const inner1Ref = useRef(); 
-  const inner3Ref = useRef();
-  const knot1Ref = useRef(); 
-  const knot2Ref = useRef(); 
-  const pointLightRef = useRef(); 
+    const inner3Ref = useRef();
+    const pointLightRef = useRef(); 
 
   const outerGLTF = useGLTF('/assets/outer_sphere.glb');
   const inner1GLTF = useGLTF('/assets/inner_1.glb');
@@ -102,17 +100,6 @@ function LogoMeshes() {
       });
     }
 
-    // Spin chaotic energy knot layers seamlessly (NO scale heartbeat)
-    if (knot1Ref.current) {
-      knot1Ref.current.rotation.y += delta * 2.5;
-      knot1Ref.current.rotation.z += delta * 1.5;
-      knot1Ref.current.rotation.x += delta * (0.5 + Math.sin(t * 5));
-    }
-    if (knot2Ref.current) {
-      knot2Ref.current.rotation.x -= delta * 3.0;
-      knot2Ref.current.rotation.z -= delta * 2.5;
-      knot2Ref.current.rotation.y -= delta * (0.8 + Math.cos(t * 8));
-    }
 
     // Flicker internal light source casting on the silver shell
     if (pointLightRef.current) {
@@ -146,13 +133,7 @@ function LogoMeshes() {
       <primitive object={inner1GLTF.scene} ref={inner1Ref} position={[0, 0, 0]} />
       <primitive object={inner3GLTF.scene} ref={inner3Ref} position={[0, 0, 0]} />
 
-      {/* Layer 3: Intersecting Energy Strands (Native 3D Torus Knots) */}
-      <mesh ref={knot1Ref} material={plasmaStringMaterial} scale={[0.8, 0.8, 0.8]}>
-        <torusKnotGeometry args={[0.5, 0.05, 128, 16, 3, 5]} />
-      </mesh>
-      <mesh ref={knot2Ref} material={plasmaStringMaterial} scale={[0.9, 0.9, 0.9]}>
-        <torusKnotGeometry args={[0.45, 0.03, 150, 16, 4, 7]} />
-      </mesh>
+
 
       {/* Multi-layered scattered plasma particle effect */}
       <Sparkles count={300} scale={1.8} size={2.5} speed={0.8} opacity={0.6} color="#00ccff" />
