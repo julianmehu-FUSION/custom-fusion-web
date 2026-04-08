@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useGLTF, PresentationControls, Environment, ContactShadows, Float, Center, Bounds, Html, Lightformer } from '@react-three/drei';
+import { useGLTF, PresentationControls, Environment, ContactShadows, Float, Center, Bounds, Html, Backdrop, SoftShadows } from '@react-three/drei';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -35,41 +35,46 @@ function CabinetModel(props) {
           child.userData.basePos = child.position.clone();
         }
         
+        // Essential for photoreal backdrop shading
+        child.castShadow = true;
+        child.receiveShadow = true;
+
         const name = child.name.toUpperCase();
         
-        if (name.includes('LINER')) {
-          // Rose Gold Lip
-          child.material = new THREE.MeshStandardMaterial({
-            color: '#e0a996',
-            metalness: 1.0,
-            roughness: 0.15
-          });
-        } else if (name.includes('OUTER') || name.includes('TOP') || name.includes('BASE') || name.includes('DRAWER') || name.includes('BRACKET')) {
-          // Satin White Plastic Shell (Egg)
-          child.material = new THREE.MeshStandardMaterial({
-            color: '#ffffff',
-            metalness: 0.0,
-            roughness: 0.3
-          });
-        } else if (name.includes('EMBLEM')) {
-          // Custom Fusion Silver Logo
-          child.material = new THREE.MeshStandardMaterial({
-            color: '#f0f0f0',
-            metalness: 1.0,
-            roughness: 0.1
-          });
-        } else if (name.includes('GLASS') || name.includes('CUP') || name.includes('BOTTLE')) {
-          // Glass Cups and Bottles
-          child.material = new THREE.MeshPhysicalMaterial({
-            color: '#ffffff', transparent: true, transmission: 1.0,
-            opacity: 1.0, roughness: 0.05, ior: 1.5, thickness: 1.0
-          });
-        } else if (name.includes('LIQUID')) {
-          // Amber Alcohol
-          child.material = new THREE.MeshPhysicalMaterial({
-            color: '#d4af37', transparent: true, opacity: 0.9, 
-            transmission: 0.8, roughness: 0.05
-          });
+        // Use clone() to PRESERVE baked textures (like bottle labels) while injecting physical properties
+        if (!child.userData.matFixed && child.material) {
+           child.material = child.material.clone();
+           child.userData.matFixed = true;
+
+           if (name.includes('LINER')) {
+             // Rose Gold Lip
+             child.material.color.set('#ebb8ad');
+             child.material.metalness = 1.0;
+             child.material.roughness = 0.2;
+           } else if (name.includes('OUTER') || name.includes('TOP') || name.includes('BASE') || name.includes('DRAWER') || name.includes('BRACKET')) {
+             // Eggshell White Plastic with slight noise/imperfection simulation
+             child.material.color.set('#f2f1ee'); 
+             child.material.metalness = 0.05;
+             child.material.roughness = 0.55; 
+           } else if (name.includes('EMBLEM')) {
+             // Custom Fusion Silver Logo
+             child.material.color.set('#fcfcfc');
+             child.material.metalness = 1.0;
+             child.material.roughness = 0.1;
+           } else if (name.includes('GLASS') || name.includes('CUP') || name.includes('BOTTLE')) {
+             // Glass Cups and Bottles - preserving their labels!
+             child.material.transparent = true;
+             child.material.transmission = 1.0;
+             child.material.opacity = 1.0; 
+             child.material.roughness = 0.05;
+           } else if (name.includes('LIQUID')) {
+             // Amber Alcohol
+             child.material.color.set('#b55d05'); 
+             child.material.transparent = true;
+             child.material.opacity = 0.95; 
+             child.material.transmission = 0.5;
+             child.material.roughness = 0.05;
+           }
         }
       }
     });
@@ -141,20 +146,37 @@ function CabinetModel(props) {
         </Float>
       </PresentationControls>
 
-      {/* Built-in blank room for PBR environment mapping, totally white! */}
-      <Environment background={true} resolution={256}>
-        <color attach="background" args={['#ffffff']} />
-        <Lightformer form="rect" intensity={2} position={[0, 10, 5]} scale={10} target={[0, 0, 0]} />
-        <Lightformer form="rect" intensity={2} position={[-5, 5, -5]} scale={10} target={[0, 0, 0]} />
-        <Lightformer form="rect" intensity={2} position={[10, 5, 0]} scale={10} target={[0, 0, 0]} />
-      </Environment>
+      {/* Invisible environment map merely for realistic glossy reflections, zero backdrop rendering */}
+      <Environment preset="city" blur={1} background={false} />
 
-      <directionalLight position={[0, 10, 10]} intensity={1.0} color="#ffffff" />
-      <directionalLight position={[-10, 5, -10]} intensity={0.4} color="#f0f0f0" />
-      <ambientLight intensity={0.6} />
+      {/* Lighting optimized for shadows */}
+      <ambientLight intensity={0.5} color="#ffffff" />
+      <directionalLight 
+         position={[8, 12, 10]} 
+         intensity={1.0} 
+         color="#ffffff" 
+         castShadow 
+         shadow-mapSize={[1024, 1024]}
+         shadow-camera-far={50}
+         shadow-camera-left={-10}
+         shadow-camera-right={10}
+         shadow-camera-top={10}
+         shadow-camera-bottom={-10}
+      />
       
-      {/* Drop Contact Shadows for grounding on white bg */}
-      <ContactShadows position={[0, -2.5, 0]} opacity={0.3} scale={15} blur={2.0} far={4} color="#000000" />
+      {/* Physical Photography Backdrop */}
+      <Backdrop 
+        receiveShadow 
+        floor={5} 
+        segments={30} 
+        position={[0, -2.5, -4]} 
+        scale={[20, 10, 10]}
+      >
+        <meshStandardMaterial color="#ffffff" roughness={1} />
+      </Backdrop>
+
+      {/* Ambient shadow falloff for realism */}
+      <ContactShadows position={[0, -2.48, 0]} opacity={0.6} scale={15} blur={2.0} far={4} color="#000000" />
     </group>
   );
 }
@@ -162,7 +184,8 @@ function CabinetModel(props) {
 export default function AutoCabinet() {
   return (
     <div style={{ width: '100%', height: '100%', minHeight: '500px' }}>
-      <Canvas camera={{ position: [0, 0, 8], fov: 45 }} dpr={[1, 2]}>
+      <Canvas shadows camera={{ position: [0, 0, 8], fov: 45 }} dpr={[1, 2]}>
+        <SoftShadows size={25} samples={10} focus={0.5} />
         <React.Suspense fallback={null}>
           <CabinetModel />
         </React.Suspense>
