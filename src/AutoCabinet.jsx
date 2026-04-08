@@ -3,9 +3,11 @@ import { useGLTF, PresentationControls, Environment, ContactShadows, Float, Cent
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-// Categorize logic for raycaster
+// Categorize logic for motion
 const checkIsDrawer = (nameMatch) => nameMatch.includes('DRAWER') || nameMatch.includes('ICE') || nameMatch.includes('TRAY') || nameMatch.includes('CUP') || nameMatch.includes('GLASS') || nameMatch.includes('EMBLEM');
-const checkIsLift = (nameMatch) => nameMatch.includes('LIFT') || nameMatch.includes('BOTTLE') || nameMatch.includes('CAP') || nameMatch.includes('COGNAC') || nameMatch.includes('WHISKY') || nameMatch.includes('VODKA') || nameMatch.includes('SHOT') || nameMatch.includes('TOP') || nameMatch.includes('LIQUI');
+
+// Tightly restrict LIFT so random side brackets don't rise (must be TOP SHELL to lift, not just any TOP)
+const checkIsLift = (nameMatch) => nameMatch.includes('LIFT') || nameMatch.includes('BOTTLE') || nameMatch.includes('CAP') || nameMatch.includes('COGNAC') || nameMatch.includes('WHISKY') || nameMatch.includes('VODKA') || nameMatch.includes('SHOT') || nameMatch.includes('LIQUI') || (nameMatch.includes('TOP') && nameMatch.includes('SHELL'));
 
 function CabinetModel({ setHoverText, ...props }) {
   const group = useRef();
@@ -59,15 +61,17 @@ function CabinetModel({ setHoverText, ...props }) {
              child.material.color.set('#f4f3ef'); 
              child.material.metalness = 0.02;
              child.material.roughness = 0.6; 
-             // DESTROY KeyShot's intrusive wavy swirly normal maps
+             // DESTROY KeyShot's intrusive wavy swirly texture maps (including displacement/bump)
              child.material.normalMap = null;
              child.material.roughnessMap = null;
+             child.material.displacementMap = null;
+             child.material.bumpMap = null;
              child.material.map = null;
              child.material.needsUpdate = true;
            } else if (name.includes('EMBLEM')) {
-             // Custom Fusion Silver Logo
+             // Custom Fusion Rose Gold Logo per request
              child.material = oldMat.clone();
-             child.material.color.set('#444444'); // Darken base to create dark chrome reflections
+             child.material.color.set('#e0a996'); // Rose gold to match lip
              child.material.metalness = 1.0;
              child.material.roughness = 0.1;
            } else if (name.includes('GLASS') || name.includes('CUP') || name.includes('BOTTLE')) {
@@ -95,14 +99,14 @@ function CabinetModel({ setHoverText, ...props }) {
   }, [scene]);
 
   useFrame((state, delta) => {
-    // Threaded motor lift physics
-    const targetDrawer = -3.0; // Moderate drawer push 
-    const targetLift = 5.0;  // Moderate liquor rise
-    const speedDrawer = 2.5 * delta;
-    const speedLift = 3.5 * delta;
+    // Threaded motor lift physics - targeting positive outward vector
+    const targetDrawer = 15.0; // Drawers extend outwards positively
+    const targetLift = 8.0;  // Lift extends upwards positively
+    const speedDrawer = 10.5 * delta;
+    const speedLift = 5.5 * delta;
 
-    if (openDrawer) drawerVal.current = Math.max(targetDrawer, drawerVal.current - speedDrawer);
-    else drawerVal.current = Math.min(0, drawerVal.current + speedDrawer);
+    if (openDrawer) drawerVal.current = Math.min(targetDrawer, drawerVal.current + speedDrawer);
+    else drawerVal.current = Math.max(0, drawerVal.current - speedDrawer);
 
     if (openLift) liftVal.current = Math.min(targetLift, liftVal.current + speedLift);
     else liftVal.current = Math.max(0, liftVal.current - speedLift);
@@ -114,10 +118,10 @@ function CabinetModel({ setHoverText, ...props }) {
       const nameMatch = key.toUpperCase();
       
       if (checkIsDrawer(nameMatch)) {
-        node.position.y = node.userData.basePos.y + drawerVal.current;
+        node.position.y = node.userData.basePos.y + drawerVal.current; // Drawer runs on local Y
       }
       if (checkIsLift(nameMatch)) {
-        node.position.z = node.userData.basePos.z + liftVal.current;
+        node.position.z = node.userData.basePos.z + liftVal.current; // Lift runs on local Z
       }
     });
   });
@@ -133,8 +137,9 @@ function CabinetModel({ setHoverText, ...props }) {
                 onPointerOver={(e) => {
                   e.stopPropagation();
                   document.body.style.cursor = 'pointer';
-                  if (checkIsDrawer(e.object.name.toUpperCase())) setHoverText('Click to Toggle Drawer');
-                  else setHoverText('Click to Toggle Lift');
+                  // Calculate if hovering top half or bottom half based on world point bounds roughly
+                  if (e.point.y > 0) setHoverText('Click to Lift Cabinet');
+                  else setHoverText('Click to Open Drawer');
                 }}
                 onPointerOut={(e) => {
                   document.body.style.cursor = 'auto';
@@ -142,9 +147,12 @@ function CabinetModel({ setHoverText, ...props }) {
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  const nameMatch = e.object.name.toUpperCase();
-                  if (checkIsDrawer(nameMatch)) setOpenDrawer(o => !o);
-                  else setOpenLift(o => !o);
+                  // Raycaster explicitly splits interaction based on y axis slice rather than mesh names
+                  if (e.point.y > 0) {
+                     setOpenLift(o => !o);
+                  } else {
+                     setOpenDrawer(o => !o);
+                  }
                 }}
               />
             </Center>
@@ -190,14 +198,12 @@ export default function AutoCabinet() {
   return (
     <div style={{ width: '100%', height: '100%', minHeight: '500px', position: 'relative' }}>
       
-      {/* Reliable HTML Overlay natively on the DOM instead of WebGL */}
-      <div style={{ 
-        position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', zIndex: 100, 
-        background: 'rgba(0,0,0,0.85)', color: '#fff', padding: '12px 24px', borderRadius: '30px', 
-        fontFamily: 'var(--font-display)', letterSpacing: '1px', textTransform: 'uppercase', fontSize: '13px',
-        transition: 'opacity 0.3s', opacity: hoverText ? 1 : 0, pointerEvents: 'none' 
-      }}>
-        {hoverText || 'INTERACT'}
+      {/* Absolute overlay over the 3D canvas so text styling natively matches the mockups */}
+      <div style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', zIndex: 100, textAlign: 'center', pointerEvents: 'none', transition: 'opacity 0.4s', opacity: hoverText ? 1 : 0 }}>
+         <div style={{ color: '#444', fontFamily: 'var(--font-display)', fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '4px', marginBottom: '8px' }}>
+            {hoverText}
+         </div>
+         <div style={{ height: '1.5px', width: '100%', background: 'linear-gradient(90deg, rgba(68,68,68,0) 0%, rgba(68,68,68,0.8) 50%, rgba(68,68,68,0) 100%)' }} />
       </div>
 
       <Canvas shadows camera={{ position: [0, 0, 8], fov: 45 }} dpr={[1, 2]}>
