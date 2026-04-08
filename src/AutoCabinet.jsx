@@ -18,10 +18,10 @@ function CabinetModel(props) {
       
       // Fix KeyShot default black paint for WebGL so it looks like polished plastic instead of a black void
       if (name.includes('black')) {
-        mat.color.set('#1a1a1c'); // Dark graphite/off-black for depth
-        mat.roughness = 0.3; // Smooth polished plastic without sharp mirror reflections
+        mat.color.set('#fdfdfd'); // Satin white plastic
+        mat.roughness = 0.45; // Smooth satin plastic without sharp mirror reflections
         mat.metalness = 0.05; // Less metallic reflection
-        mat.envMapIntensity = 1.0; // Dimmer environment reflections
+        mat.envMapIntensity = 0.8; // Dimmer environment reflections
         mat.needsUpdate = true;
       }
 
@@ -53,7 +53,7 @@ function CabinetModel(props) {
       }
     });
     
-    // Only adjust cameras
+    // Only adjust cameras and manually force the Lip to Rose Gold
     const cameras = [];
     scene.traverse((child) => {
       if (child.isCamera) {
@@ -62,6 +62,15 @@ function CabinetModel(props) {
       // Store original mesh positions natively for offsets
       if (child.isMesh && child.userData.basePos === undefined) {
         child.userData.basePos = child.position.clone();
+      }
+      // Hard override the Liner (Lip) to be polished Rose Gold
+      if (child.isMesh && child.name.toUpperCase().includes('LINER')) {
+        child.material = new THREE.MeshStandardMaterial({
+          color: '#e0bfb8',
+          metalness: 1.0,
+          roughness: 0.15,
+          envMapIntensity: 1.5
+        });
       }
     });
     cameras.forEach(cam => {
@@ -72,12 +81,12 @@ function CabinetModel(props) {
 
   useFrame((state, delta) => {
     // Uses linear math to simulate a slow, mechanical threaded motor lift
-    const targetDrawer = -0.8; // Safe drawer extension distance 
-    const targetLift = 1.0;  // Safe liquor ascent distance
+    const targetDrawer = -15.0; // Greatly increased distance for millimeter scale
+    const targetLift = 20.0;  // Greatly increased distance for millimeter scale
     
     // Constant units per second
-    const speedDrawer = 0.4 * delta;
-    const speedLift = 0.3 * delta;
+    const speedDrawer = 8.0 * delta;
+    const speedLift = 10.0 * delta;
 
     if (open) {
       drawerVal.current = Math.max(targetDrawer, drawerVal.current - speedDrawer);
@@ -119,11 +128,11 @@ function CabinetModel(props) {
           </Bounds>
         </Float>
       </PresentationControls>
-      <Environment preset="studio" intensity={1.5} blur={1} />
-      <directionalLight position={[0, 10, 10]} intensity={1.5} />
-      <directionalLight position={[-10, 5, -10]} intensity={0.5} />
-      <ambientLight intensity={0.4} />
-      <ContactShadows position={[0, -2.5, 0]} opacity={0.6} scale={15} blur={1.5} far={4} />
+      <Environment preset="city" blur={0.8} intensity={1.2} />
+      <directionalLight position={[0, 10, 10]} intensity={1.2} color="#ffffff" />
+      <directionalLight position={[-10, 5, -10]} intensity={0.4} color="#eef" />
+      <ambientLight intensity={0.6} />
+      <ContactShadows position={[0, -2.5, 0]} opacity={0.3} scale={15} blur={2.0} far={4} color="#000" />
     </group>
   );
 }
