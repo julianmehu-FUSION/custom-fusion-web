@@ -43,13 +43,14 @@ function CabinetModel({ setHoverText, ...props }) {
            const oldMat = child.material;
            child.userData.matFixed = true;
 
-           // HIDE internal mechanical brackets that poke out
-           if (name.includes('BRACKET') || name.includes('GEAR') || name.includes('MOTOR') || name === 'DEFAULT') {
+           // WE EXPLICITLY SHIELD THE "GEAR TRACK" SO THE SLIDER RAILS DO NOT GO MISSING!
+           // But we still hide the brackets and ugly motors.
+           if (name.includes('BRACKET') || name.includes('MOTOR') || name === 'DEFAULT' || (name.includes('GEAR') && !name.includes('TRACK'))) {
               child.visible = false;
               return;
            }
 
-           // GEOMETRIC TAB CULLING (PROVEN):
+           // PROVEN GEOMETRIC TAB CULLING:
            // The tabs hide under structural groups like LIFT or TOP in KeyShot. 
            // We isolate any mesh in those groups that is small and aggressively off axis!
            if (name.includes('LIFT') || name.startsWith('TOP')) {
@@ -66,14 +67,14 @@ function CabinetModel({ setHoverText, ...props }) {
               }
            }
 
+           // EXACT MATERIAL MATCHING FOR PERFECT VISUAL COLOR
            if (name.includes('LINER')) {
-             // Rose Gold Lip
              child.material = oldMat.clone();
              child.material.color.set('#e0a996');
              child.material.metalness = 1.0;
              child.material.roughness = 0.2;
            } else if (name.includes('BASE')) {
-             // Polished Cement / Stone Shader ONLY for the very bottom foot
+             // Polished Base
              child.material = new THREE.MeshPhysicalMaterial({
                  color: '#aca8a0',           
                  roughness: 0.6,             
@@ -82,8 +83,8 @@ function CabinetModel({ setHoverText, ...props }) {
                  clearcoatRoughness: 0.15    
              });
              child.material.needsUpdate = true;
-           } else if (name.includes('OUTER') || name.includes('CABINET') || name.startsWith('TOP SHELL')) {
-             // Eggshell White Plastic - FORCE NEW MATERIAL TO STRIP ALL BAKED MESH TEXTURES
+           } else if (name.includes('OUTER') || name.includes('CABINET') || name.includes('TOP') || name.includes('DRAWER')) {
+             // Eggshell White Plastic for Outer Shells, Top Lids, and Drawer
              child.material = new THREE.MeshStandardMaterial({
                  color: '#f6f5f1', 
                  metalness: 0.0,
@@ -91,33 +92,32 @@ function CabinetModel({ setHoverText, ...props }) {
                  flatShading: false
              });
            } else if (name.includes('EMBLEM') || name.includes('LOGO')) {
-             // Custom Fusion Rose Gold Logo 
              child.material = oldMat.clone();
-             child.material.color.set('#e0a996'); // Rose gold to match lip
+             child.material.color.set('#e0a996'); 
              child.material.metalness = 1.0;
              child.material.roughness = 0.1;
              if (!child.userData.recessed) {
-                child.position.y -= 0.01; // Recess logo backwards 1mm into the shell
-                if (child.userData.basePos) child.userData.basePos.y -= 0.01; // Update raycast physics baseline
+                child.position.y -= 0.01; 
+                if (child.userData.basePos) child.userData.basePos.y -= 0.01; 
                 child.userData.recessed = true;
              }
            } else if ((name.includes('GLASS') || name.includes('CUP')) && !name.includes('MAT')) {
-             // Glass Cups (Both Cognac Cups in lift, and Vodka/Shot glasses in Drawer)
+             // Vodka, Shot, and Cognac glasses mapped beautifully to Ghost Glass
              child.material = oldMat.clone();
              child.material.transparent = true;
-             child.material.opacity = 0.4; // Light ghost glass overlay
+             child.material.opacity = 0.4; 
              child.material.roughness = 0.1;
              child.material.envMapIntensity = 2.0;
            } else if (name.includes('LIQUID')) {
-             // Amber Alcohol 
+             // Alcohol Simulation
              child.material = oldMat.clone();
              child.material.color.set('#d48f37'); 
              child.material.transparent = true;
              child.material.opacity = 0.95;
            } else {
-             // Catch all restoring items like the BOTTLES and DRAWER which needs its baked KeyShot shadows to look visually flush
              child.material = oldMat.clone();
-           }        }
+           }
+        }
       }
     });
 
@@ -139,6 +139,10 @@ function CabinetModel({ setHoverText, ...props }) {
 
     if (openLift) liftVal.current = Math.min(targetLift, liftVal.current + speedLift);
     else liftVal.current = Math.max(0, liftVal.current - speedLift);
+
+    // DYNAMIC ANIMATION GROUPS: Explicitly mapped via the Node structure
+    const checkIsDrawer = (n) => n.includes('DRAWER') || n.includes('ICE') || n.includes('TRACK') || n.includes('MAT') || n.includes('LINER') || n.includes('VODKA') || n.includes('SHOT') || n === 'GLASSES';
+    const checkIsLift = (n) => n.includes('BOTTLE') || n.includes('CAP') || n.includes('LIQUOR LIFT') || n.includes('ALCOHOL LIFT') || n.includes('COGNAC') || n.includes('LIQUID') || n.includes('LABEL') || n.includes('WHISKY') || n.includes('GIN') || n.includes('BTL');
 
     Object.keys(nodes).forEach(key => {
       const node = nodes[key];
