@@ -11,29 +11,9 @@ function CabinetModel(props) {
   const liftVal = useRef(0);
 
   useEffect(() => {
-    Object.values(materials).forEach((mat) => {
-      if (!mat || !mat.name) return;
-      const name = mat.name.toLowerCase();
-      if (name.includes('glass')) {
-        mat.transparent = true;
-        mat.opacity = 0.6;
-        mat.roughness = 0.05;
-        mat.metalness = 0.9;
-        mat.transmission = 0.9;
-        mat.ior = 1.5;
-      }
-      if (name.includes('polished') || name.includes('metal')) {
-        mat.roughness = 0.1;
-        mat.metalness = 1.0;
-        mat.envMapIntensity = 2.5;
-      }
-      if (name.includes('black')) {
-        mat.roughness = 0.4;
-        mat.metalness = 0.8;
-      }
-      mat.needsUpdate = true;
-    });
-
+    // Rely on KeyShot's native materials. Removed PBR overrides that caused black rendering.
+    
+    // Only adjust cameras
     const cameras = [];
     scene.traverse((child) => {
       if (child.isCamera) {
@@ -48,13 +28,13 @@ function CabinetModel(props) {
       cam.visible = false;
       cam.removeFromParent();
     });
-  }, [materials, scene]);
+  }, [scene]);
 
   useFrame((state, delta) => {
-    // Cabinet geometry was created in KeyShot and physically scaled to meters.
-    // Inside KeyShot's root hierarchy, `Z` is vertical altitude (Lift), and `Y` is front/back depth (Drawer).
-    const targetDrawer = open ? -0.45 : 0; // Pulls drawer OUT
-    const targetLift = open ? 0.28 : 0;  // Elevates liquor UP
+    // Cabinet geometry was created in KeyShot and physically scaled to millimeters natively.
+    // We must offset them by hundreds of units to see visible movement inside the scale!
+    const targetDrawer = open ? -350 : 0; // Pulls drawer OUT significantly
+    const targetLift = open ? 250 : 0;  // Elevates liquor UP significantly
 
     drawerVal.current = THREE.MathUtils.damp(drawerVal.current, targetDrawer, 5, delta);
     liftVal.current = THREE.MathUtils.damp(liftVal.current, targetLift, 4, delta);
@@ -63,9 +43,11 @@ function CabinetModel(props) {
       const node = nodes[key];
       if (!node || node.userData.basePos === undefined) return;
       
-      const isDrawer = key.includes('DRAWER') || key.includes('ICE_TRAY') || key.includes('ICE_IN_TRAY');
-      const isLift = key.includes('LIFT') || key.includes('LIQUID') || key.includes('BOTTLE') || key.includes('CAP') || key.includes('COGNAC') || key.includes('WHISKY') || key.includes('VODKA') || key.includes('SHOT');
+      const isDrawer = key.includes('DRAWER') || key.includes('ICE') || key.includes('TRAY_');
+      const isLift = key.includes('LIFT') || key.includes('LIQIUD') || key.includes('BOTTLE') || key.includes('CAP') || key.includes('COGNAC') || key.includes('WHISKY') || key.includes('VODKA') || key.includes('SHOT');
 
+      // KeyShot default group rotation is [-PI/2, 0, 0]. 
+      // Inside this local space: Y points OUT, Z points UP.
       if (isDrawer) {
         node.position.y = node.userData.basePos.y + drawerVal.current;
       }
@@ -111,3 +93,5 @@ export default function AutoCabinet() {
 }
 
 useGLTF.preload('/assets/autocabinet.glb');
+
+
