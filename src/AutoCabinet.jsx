@@ -56,17 +56,14 @@ function CabinetModel({ setHoverText, ...props }) {
              child.material.metalness = 1.0;
              child.material.roughness = 0.2;
            } else if (name.includes('OUTER') || name.includes('TOP') || name.includes('BASE') || name.includes('DRAWER')) {
-             // Eggshell White Plastic
-             child.material = oldMat.clone();
-             child.material.color.set('#f4f3ef'); 
-             child.material.metalness = 0.02;
-             child.material.roughness = 0.6; 
-             // DESTROY KeyShot's intrusive wavy swirly texture maps (including displacement/bump)
-             child.material.normalMap = null;
-             child.material.roughnessMap = null;
-             child.material.displacementMap = null;
-             child.material.bumpMap = null;
-             child.material.map = null;
+             // Polished Cement / Stone Shader
+             child.material = new THREE.MeshPhysicalMaterial({
+                 color: '#aca8a0',           // Warm concrete grey
+                 roughness: 0.6,             // Porous concrete base
+                 metalness: 0.05,
+                 clearcoat: 1.0,             // Epoxy polish layer
+                 clearcoatRoughness: 0.15    // Slightly irregular polish
+             });
              child.material.needsUpdate = true;
            } else if (name.includes('EMBLEM')) {
              // Custom Fusion Rose Gold Logo per request
@@ -134,6 +131,7 @@ function CabinetModel({ setHoverText, ...props }) {
             <Center>
               <primitive 
                 object={scene} 
+                rotation={[0, Math.PI, 0]} // Flip 180 degrees so front is visible
                 onPointerOver={(e) => {
                   e.stopPropagation();
                   document.body.style.cursor = 'pointer';
