@@ -293,10 +293,10 @@ function LogoMeshes() {
         if (child.isMesh) {
           child.visible = true;
           child.material = new THREE.MeshStandardMaterial({
-            color: '#3a3a40',
+            color: '#606068',
             metalness: 0.9,
-            roughness: 0.2,
-            envMapIntensity: 2.5,
+            roughness: 0.3,
+            envMapIntensity: 3.5,
           });
           child.material.needsUpdate = true;
         }
