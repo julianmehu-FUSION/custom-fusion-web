@@ -24,7 +24,11 @@ function AnimatedWord({ text, baseDelay, isAccent }) {
 function App() {
   const [loaded, setLoaded] = useState(false);
   const [activeCollection, setActiveCollection] = useState(null);
-  useEffect(() => { setLoaded(true); }, []);
+  useEffect(() => {
+    document.fonts.ready.then(() => {
+      setLoaded(true);
+    });
+  }, []);
 
   return (
     <div className={`app-container ${loaded ? 'loaded' : ''}`}>
