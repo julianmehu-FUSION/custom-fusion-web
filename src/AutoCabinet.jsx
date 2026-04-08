@@ -1,11 +1,14 @@
-import React, { useRef, useEffect } from 'react';
-import { useGLTF, useAnimations, PresentationControls, Environment, ContactShadows, Float, Center, Bounds } from '@react-three/drei';
-import { Canvas } from '@react-three/fiber';
+import React, { useRef, useEffect, useState } from 'react';
+import { useGLTF, PresentationControls, Environment, ContactShadows, Float, Center, Bounds } from '@react-three/drei';
+import { Canvas, useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 
 function CabinetModel(props) {
   const group = useRef();
-  const { scene, animations, materials } = useGLTF('/assets/autocabinet.glb');
-  const { actions } = useAnimations(animations, group);
+  const { scene, nodes, materials } = useGLTF('/assets/autocabinet.glb');
+  const [open, setOpen] = useState(false);
+  const drawerVal = useRef(0);
+  const liftVal = useRef(0);
 
   useEffect(() => {
     Object.values(materials).forEach((mat) => {
@@ -31,26 +34,52 @@ function CabinetModel(props) {
       mat.needsUpdate = true;
     });
 
-    if (actions) {
-      Object.values(actions).forEach(action => {
-        if (action) action.play();
-      });
-    }
-
     const cameras = [];
     scene.traverse((child) => {
       if (child.isCamera) {
         cameras.push(child);
+      }
+      // Store original mesh positions natively for offsets
+      if (child.isMesh && child.userData.basePos === undefined) {
+        child.userData.basePos = child.position.clone();
       }
     });
     cameras.forEach(cam => {
       cam.visible = false;
       cam.removeFromParent();
     });
-  }, [materials, actions, scene]);
+  }, [materials, scene]);
+
+  useFrame((state, delta) => {
+    // Cabinet geometry was created in KeyShot and physically scaled to meters.
+    // Inside KeyShot's root hierarchy, `Z` is vertical altitude (Lift), and `Y` is front/back depth (Drawer).
+    const targetDrawer = open ? -0.45 : 0; // Pulls drawer OUT
+    const targetLift = open ? 0.28 : 0;  // Elevates liquor UP
+
+    drawerVal.current = THREE.MathUtils.damp(drawerVal.current, targetDrawer, 5, delta);
+    liftVal.current = THREE.MathUtils.damp(liftVal.current, targetLift, 4, delta);
+
+    Object.keys(nodes).forEach(key => {
+      const node = nodes[key];
+      if (!node || node.userData.basePos === undefined) return;
+      
+      const isDrawer = key.includes('DRAWER') || key.includes('ICE_TRAY') || key.includes('ICE_IN_TRAY');
+      const isLift = key.includes('LIFT') || key.includes('LIQUID') || key.includes('BOTTLE') || key.includes('CAP') || key.includes('COGNAC') || key.includes('WHISKY') || key.includes('VODKA') || key.includes('SHOT');
+
+      if (isDrawer) {
+        node.position.y = node.userData.basePos.y + drawerVal.current;
+      }
+      if (isLift) {
+        node.position.z = node.userData.basePos.z + liftVal.current;
+      }
+    });
+
+    // Make the cabinet very slightly wobble if it's opened to feel mechanical
+    group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, open ? Math.sin(state.clock.elapsedTime * 2) * 0.01 : 0, 0.1);
+  });
 
   return (
-    <group ref={group} {...props} dispose={null}>
+    <group ref={group} {...props} dispose={null} onClick={(e) => { e.stopPropagation(); setOpen(!open); }}>
       <PresentationControls global={false} cursor={true} snap={true} speed={1} zoom={1} rotation={[0.1, -Math.PI / 4, 0]} polar={[-0.2, Math.PI / 4]} azimuth={[-Math.PI / 1.5, Math.PI / 1.5]}>
         <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5}>
           <Bounds fit clip observe margin={1.2}>
