@@ -259,7 +259,7 @@ function App() {
               </div>
             </div>
             <div className="card" onClick={() => setActiveItem('Auto Cabinet')}>
-              <div className="card-image" style={{backgroundImage: "url('/assets/industrial.jpg')"}}></div>
+              <div className="card-image" style={{backgroundImage: "url('/assets/autocabinet_thumbnail.jpg')"}}></div>
               <div className="card-overlay">
                 <h3>Auto Cabinet</h3>
               </div>
