@@ -6,8 +6,8 @@ import * as THREE from 'three';
 // Categorize logic for motion
 const checkIsDrawer = (nameMatch) => nameMatch.includes('DRAWER') || nameMatch.includes('ICE') || nameMatch.includes('TRAY') || nameMatch.includes('CUP') || nameMatch.includes('GLASS');
 
-// Tightly restrict LIFT so random side brackets don't rise (must be TOP SHELL to lift, not just any TOP)
-const checkIsLift = (nameMatch) => nameMatch.includes('LIFT') || nameMatch.includes('BOTTLE') || nameMatch.includes('CAP') || nameMatch.includes('COGNAC') || nameMatch.includes('WHISKY') || nameMatch.includes('VODKA') || nameMatch.includes('SHOT') || nameMatch.includes('LIQUI') || nameMatch === 'TOP SHELL';
+// Tightly restrict LIFT so random side brackets don't rise
+const checkIsLift = (nameMatch) => nameMatch.includes('BOTTLE') || nameMatch.includes('CAP') || nameMatch.includes('COGNAC') || nameMatch.includes('WHISKY') || nameMatch.includes('VODKA') || nameMatch.includes('SHOT') || nameMatch.includes('LIQUI') || nameMatch.includes('TOP');
 
 function CabinetModel({ setHoverText, ...props }) {
   const group = useRef();
@@ -32,9 +32,9 @@ function CabinetModel({ setHoverText, ...props }) {
           child.userData.basePos = child.position.clone();
         }
         
-        // Essential for photoreal backdrop shading
+        // Resolve self-shadowing acne that makes CAD models appear black
         child.castShadow = true;
-        child.receiveShadow = true;
+        child.receiveShadow = false;
 
         const name = child.name.toUpperCase();
 
@@ -43,8 +43,8 @@ function CabinetModel({ setHoverText, ...props }) {
            const oldMat = child.material;
            child.userData.matFixed = true;
 
-           // HIDE internal mechanical brackets that poke out
-           if (name.includes('BRACKET') || name.includes('TRACK') || name.includes('GEAR') || name.includes('MOTOR') || name === 'TOP' || name === 'LIQUOR LIFT' || name === 'DEFAULT') {
+           // HIDE internal mechanical brackets that poke out (and all LIFT frames that have tabs)
+           if (name.includes('BRACKET') || name.includes('TRACK') || name.includes('GEAR') || name.includes('MOTOR') || name.includes('LIFT') || name.includes('DEFAULT')) {
               child.visible = false;
               return;
            }
@@ -55,7 +55,7 @@ function CabinetModel({ setHoverText, ...props }) {
              child.material.color.set('#e0a996');
              child.material.metalness = 1.0;
              child.material.roughness = 0.2;
-           } else if (name === 'BASE') {
+           } else if (name.includes('BASE')) {
              // Polished Cement / Stone Shader ONLY for the base
              child.material = new THREE.MeshPhysicalMaterial({
                  color: '#aca8a0',           // Warm concrete grey
@@ -65,7 +65,7 @@ function CabinetModel({ setHoverText, ...props }) {
                  clearcoatRoughness: 0.15    // Slightly irregular polish
              });
              child.material.needsUpdate = true;
-           } else if (name.includes('OUTER') || name.includes('TOP SHELL') || name.includes('DRAWER') || name.includes('CABINET')) {
+           } else if (name.includes('OUTER') || name.includes('TOP') || name.includes('DRAWER') || name.includes('CABINET')) {
              // Eggshell White Plastic - FORCE NEW MATERIAL TO STRIP ALL BAKED MESH TEXTURES
              child.material = new THREE.MeshStandardMaterial({
                  color: '#f6f5f1', 
@@ -167,7 +167,7 @@ function CabinetModel({ setHoverText, ...props }) {
       </PresentationControls>
 
       {/* Invisible environment map merely for realistic glossy reflections, zero backdrop rendering */}
-      <Environment preset="city" blur={1} background={false} />
+      <Environment preset="studio" blur={1} background={false} />
 
       {/* Lighting optimized for shadows */}
       <ambientLight intensity={0.5} color="#ffffff" />
