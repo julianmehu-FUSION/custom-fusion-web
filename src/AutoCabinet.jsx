@@ -41,39 +41,44 @@ function CabinetModel(props) {
 
         const name = child.name.toUpperCase();
         
-        // Use clone() to PRESERVE baked textures (like bottle labels) while injecting physical properties
+        // Safely upgrade or mutate materials, preserving UV maps where needed!
         if (!child.userData.matFixed && child.material) {
-           child.material = child.material.clone();
+           const oldMat = child.material;
            child.userData.matFixed = true;
 
            if (name.includes('LINER')) {
              // Rose Gold Lip
+             child.material = oldMat.clone();
              child.material.color.set('#ebb8ad');
              child.material.metalness = 1.0;
              child.material.roughness = 0.2;
            } else if (name.includes('OUTER') || name.includes('TOP') || name.includes('BASE') || name.includes('DRAWER') || name.includes('BRACKET')) {
-             // Eggshell White Plastic with slight noise/imperfection simulation
+             // Eggshell White Plastic
+             child.material = oldMat.clone();
              child.material.color.set('#f2f1ee'); 
              child.material.metalness = 0.05;
              child.material.roughness = 0.55; 
            } else if (name.includes('EMBLEM')) {
              // Custom Fusion Silver Logo
+             child.material = oldMat.clone();
              child.material.color.set('#fcfcfc');
              child.material.metalness = 1.0;
              child.material.roughness = 0.1;
            } else if (name.includes('GLASS') || name.includes('CUP') || name.includes('BOTTLE')) {
-             // Glass Cups and Bottles - preserving their labels!
-             child.material.transparent = true;
-             child.material.transmission = 1.0;
-             child.material.opacity = 1.0; 
-             child.material.roughness = 0.05;
+             // Glass Cups and Bottles - Safely upgrade to PhysicalMaterial
+             child.material = new THREE.MeshPhysicalMaterial({
+                color: '#ffffff', transparent: true, transmission: 1.0,
+                opacity: 1.0, roughness: 0.05, ior: 1.5, thickness: 1.0,
+                map: oldMat.map, normalMap: oldMat.normalMap, 
+                roughnessMap: oldMat.roughnessMap, metalnessMap: oldMat.metalnessMap
+             });
            } else if (name.includes('LIQUID')) {
-             // Amber Alcohol
-             child.material.color.set('#b55d05'); 
-             child.material.transparent = true;
-             child.material.opacity = 0.95; 
-             child.material.transmission = 0.5;
-             child.material.roughness = 0.05;
+             // Amber Alcohol - Safely upgrade to PhysicalMaterial
+             child.material = new THREE.MeshPhysicalMaterial({
+                color: '#b55d05', transparent: true, opacity: 0.95, 
+                transmission: 0.5, roughness: 0.05,
+                map: oldMat.map, normalMap: oldMat.normalMap
+             });
            }
         }
       }
