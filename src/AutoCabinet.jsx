@@ -44,7 +44,7 @@ function CabinetModel({ setHoverText, ...props }) {
            child.userData.matFixed = true;
 
            // HIDE internal mechanical brackets that poke out
-           if (name.includes('BRACKET') || name.includes('GEAR') || name.includes('MOTOR') || name === 'DEFAULT') {
+           if (name.includes('BRACKET') || name.includes('GEAR') || name.includes('MOTOR') || name === 'DEFAULT' || name === 'LIQUOR LIFT') {
               child.visible = false;
               return;
            }
