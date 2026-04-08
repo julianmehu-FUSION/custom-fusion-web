@@ -669,3 +669,10 @@ canvas {
   .about-gallery { grid-template-columns: repeat(2, 1fr); gap: 0.3rem; }
   .gallery-img { filter: brightness(0.25) saturate(0); }
 }
+
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+}
+
