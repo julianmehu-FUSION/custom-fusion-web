@@ -44,7 +44,7 @@ function CabinetModel({ setHoverText, ...props }) {
            child.userData.matFixed = true;
 
            // WE EXPLICITLY SHIELD THE "GEAR TRACK" SO THE SLIDER RAILS DO NOT GO MISSING!
-           if (name.includes('BRACKET') || name.includes('MOTOR') || name === 'DEFAULT' || (name.includes('GEAR') && !name.includes('TRACK'))) {
+           if (name.includes('BRACKET') || name.includes('MOTOR') || name === 'DEFAULT' || name.includes('CYLINDER') || name.includes('PIPE') || (name.includes('GEAR') && !name.includes('TRACK'))) {
               child.visible = false;
               return;
            }
@@ -158,10 +158,10 @@ function CabinetModel({ setHoverText, ...props }) {
       const nameMatch = key.toUpperCase();
       
       if (checkIsDrawer(nameMatch)) {
-        node.position.y = node.userData.basePos.y + drawerVal.current; // Drawer runs on local Y
+        node.position.z = node.userData.basePos.z + drawerVal.current; // Drawer runs OUT on local Z
       }
       if (checkIsLift(nameMatch)) {
-        node.position.z = node.userData.basePos.z + liftVal.current; // Lift runs on local Z
+        node.position.y = node.userData.basePos.y + liftVal.current; // Lift runs UP on local Y
       }
     });
   });
