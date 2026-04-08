@@ -11,11 +11,20 @@ function CabinetModel(props) {
   const liftVal = useRef(0);
 
   useEffect(() => {
-    // Restore and fix physical glass properties. KeyShot exports glass with a black diffuse map.
+    // Restore and fix physical properties.
     Object.values(materials).forEach((mat) => {
       if (!mat || !mat.name) return;
       const name = mat.name.toLowerCase();
       
+      // Fix KeyShot default black paint for WebGL so it looks like polished plastic instead of a black void
+      if (name.includes('black')) {
+        mat.color.set('#1a1a1c'); // Dark graphite/off-black for depth
+        mat.roughness = 0.15; // Smooth polished plastic
+        mat.metalness = 0.1; // Plastic is dielectric, not 100% metal
+        mat.envMapIntensity = 1.5;
+        mat.needsUpdate = true;
+      }
+
       if (name.includes('glass')) {
         mat.transparent = true;
         mat.transmission = 1.0;
@@ -32,8 +41,14 @@ function CabinetModel(props) {
         mat.opacity = 0.85;
         mat.roughness = 0.1;
         mat.transmission = 0.9;
-        // Keep native color for liquid, but ensure it catches light
         mat.envMapIntensity = 2.0;
+        mat.needsUpdate = true;
+      }
+      
+      if (name.includes('platinum') || name.includes('metal')) {
+        mat.metalness = 1.0;
+        mat.roughness = 0.15;
+        mat.envMapIntensity = 2.5;
         mat.needsUpdate = true;
       }
     });
@@ -68,8 +83,10 @@ function CabinetModel(props) {
       const node = nodes[key];
       if (!node || node.userData.basePos === undefined) return;
       
-      const isDrawer = key.includes('DRAWER') || key.includes('ICE') || key.includes('TRAY_');
-      const isLift = key.includes('LIFT') || key.includes('LIQUI') || key.includes('BOTTLE') || key.includes('CAP') || key.includes('COGNAC') || key.includes('WHISKY') || key.includes('VODKA') || key.includes('SHOT') || key.includes('TOP SHELL');
+      // Convert space strings to match exactly how GLTF formats node names (underscores)
+      const nameMatch = key.toUpperCase();
+      const isDrawer = nameMatch.includes('DRAWER') || nameMatch.includes('ICE') || nameMatch.includes('TRAY');
+      const isLift = nameMatch.includes('LIFT') || nameMatch.includes('LIQUI') || nameMatch.includes('BOTTLE') || nameMatch.includes('CAP') || nameMatch.includes('COGNAC') || nameMatch.includes('WHISKY') || nameMatch.includes('VODKA') || nameMatch.includes('SHOT') || nameMatch.includes('TOP');
 
       // KeyShot default group rotation is [-PI/2, 0, 0]. 
       // Inside this local space: Y points OUT, Z points UP.
