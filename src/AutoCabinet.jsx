@@ -49,24 +49,17 @@ function CabinetModel({ setHoverText, ...props }) {
               return;
            }
 
-           // ULTIMATE GEOMETRIC CULLING: Bypass KeyShot naming entirely!
-           // The tabs are identifiable as they are small floating blocks located strictly on the outer radius.
-           child.geometry.computeBoundingBox();
-           const bbox = child.geometry.boundingBox;
-           const cx = (bbox.max.x + bbox.min.x) / 2;
-           const dx = bbox.max.x - bbox.min.x;
-           const dy = bbox.max.y - bbox.min.y; 
-           const dz = bbox.max.z - bbox.min.z; 
-           
-           // We categorically shield all bottles, liquids, glasses, branding, and structural mats from geometric scanning
-           const isOrganic = name.includes('BOTTLE') || name.includes('GLASS') || name.includes('CUP') || 
-                             name.includes('LIQUID') || name.includes('GIN') || name.includes('WHISKY') || 
-                             name.includes('COGNAC') || name.includes('MAT') || name.includes('EMBLEM') || 
-                             name.includes('LOGO') || name.includes('LABEL') || name.includes('CAP') ||
-                             name.includes('TRACK');
-                             
-           if (!isOrganic) {
-              // Mathematical check: is the geometric center significantly offset from local origin (> half its width)
+           // GEOMETRIC TAB CULLING (PROVEN):
+           // The tabs hide under structural groups like LIFT or TOP in KeyShot. 
+           // We isolate any mesh in those groups that is small and aggressively off axis!
+           if (name.includes('LIFT') || name.startsWith('TOP')) {
+              child.geometry.computeBoundingBox();
+              const bbox = child.geometry.boundingBox;
+              const cx = (bbox.max.x + bbox.min.x) / 2;
+              const dx = bbox.max.x - bbox.min.x;
+              const dy = bbox.max.y - bbox.min.y; 
+              const dz = bbox.max.z - bbox.min.z; 
+              
               if (Math.abs(cx) > (dx * 0.5) + 0.1 && dx < 8.2 && dy < 8.2 && dz < 8.2) {
                   child.visible = false;
                   return;
@@ -89,7 +82,7 @@ function CabinetModel({ setHoverText, ...props }) {
                  clearcoatRoughness: 0.15    
              });
              child.material.needsUpdate = true;
-           } else if (name.includes('OUTER') || name.includes('TOP') || name.includes('CABINET')) {
+           } else if (name.includes('OUTER') || name.includes('CABINET') || name.startsWith('TOP SHELL')) {
              // Eggshell White Plastic - FORCE NEW MATERIAL TO STRIP ALL BAKED MESH TEXTURES
              child.material = new THREE.MeshStandardMaterial({
                  color: '#f6f5f1', 
@@ -108,8 +101,8 @@ function CabinetModel({ setHoverText, ...props }) {
                 if (child.userData.basePos) child.userData.basePos.y -= 0.01; // Update raycast physics baseline
                 child.userData.recessed = true;
              }
-           } else if (name.includes('GLASS') || (name.includes('CUP') && !name.includes('MAT'))) {
-             // Glass Cups (LEAVE BOTTLES ALONE SO BRANDED KEYSHOT LABELS SURVIVE!)
+           } else if ((name.includes('GLASS') || name.includes('CUP')) && !name.includes('MAT')) {
+             // Glass Cups (Both Cognac Cups in lift, and Vodka/Shot glasses in Drawer)
              child.material = oldMat.clone();
              child.material.transparent = true;
              child.material.opacity = 0.4; // Light ghost glass overlay
@@ -122,7 +115,7 @@ function CabinetModel({ setHoverText, ...props }) {
              child.material.transparent = true;
              child.material.opacity = 0.95;
            } else {
-             // Catch all restoring items like the DRAWER which needs its baked KeyShot shadows to look visually flush
+             // Catch all restoring items like the BOTTLES and DRAWER which needs its baked KeyShot shadows to look visually flush
              child.material = oldMat.clone();
            }        }
       }
