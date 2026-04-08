@@ -58,9 +58,14 @@ function CabinetModel({ setHoverText, ...props }) {
            const dy = bbox.max.y - bbox.min.y; 
            const dz = bbox.max.z - bbox.min.z; 
            
-           // We skip bottles and liquid so drinks placed off-center survive. 
-           // Any other small object (no dimension > 8.2) that exists physically separated off-center gets destroyed. 
-           if (!name.includes('BOTTLE') && !name.includes('GLASS') && !name.includes('CUP') && !name.includes('LIQUID')) {
+           // We categorically shield all bottles, liquids, glasses, branding, and structural mats from geometric scanning
+           const isOrganic = name.includes('BOTTLE') || name.includes('GLASS') || name.includes('CUP') || 
+                             name.includes('LIQUID') || name.includes('GIN') || name.includes('WHISKY') || 
+                             name.includes('COGNAC') || name.includes('MAT') || name.includes('EMBLEM') || 
+                             name.includes('LOGO') || name.includes('LABEL') || name.includes('CAP') ||
+                             name.includes('TRACK');
+                             
+           if (!isOrganic) {
               // Mathematical check: is the geometric center significantly offset from local origin (> half its width)
               if (Math.abs(cx) > (dx * 0.5) + 0.1 && dx < 8.2 && dy < 8.2 && dz < 8.2) {
                   child.visible = false;
@@ -84,7 +89,7 @@ function CabinetModel({ setHoverText, ...props }) {
                  clearcoatRoughness: 0.15    
              });
              child.material.needsUpdate = true;
-           } else if (name.includes('OUTER') || name.includes('TOP') || name.includes('DRAWER') || name.includes('CABINET')) {
+           } else if (name.includes('OUTER') || name.includes('TOP') || name.includes('CABINET')) {
              // Eggshell White Plastic - FORCE NEW MATERIAL TO STRIP ALL BAKED MESH TEXTURES
              child.material = new THREE.MeshStandardMaterial({
                  color: '#f6f5f1', 
@@ -103,7 +108,7 @@ function CabinetModel({ setHoverText, ...props }) {
                 if (child.userData.basePos) child.userData.basePos.y -= 0.01; // Update raycast physics baseline
                 child.userData.recessed = true;
              }
-           } else if (name.includes('GLASS') || name.includes('CUP')) {
+           } else if (name.includes('GLASS') || (name.includes('CUP') && !name.includes('MAT'))) {
              // Glass Cups (LEAVE BOTTLES ALONE SO BRANDED KEYSHOT LABELS SURVIVE!)
              child.material = oldMat.clone();
              child.material.transparent = true;
@@ -116,8 +121,10 @@ function CabinetModel({ setHoverText, ...props }) {
              child.material.color.set('#d48f37'); 
              child.material.transparent = true;
              child.material.opacity = 0.95;
-           }
-        }
+           } else {
+             // Catch all restoring items like the DRAWER which needs its baked KeyShot shadows to look visually flush
+             child.material = oldMat.clone();
+           }        }
       }
     });
 
