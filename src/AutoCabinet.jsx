@@ -9,7 +9,9 @@ function CabinetModel(props) {
 
   useEffect(() => {
     Object.values(materials).forEach((mat) => {
-      if (mat.name.toLowerCase().includes('glass')) {
+      if (!mat || !mat.name) return;
+      const name = mat.name.toLowerCase();
+      if (name.includes('glass')) {
         mat.transparent = true;
         mat.opacity = 0.6;
         mat.roughness = 0.05;
@@ -17,12 +19,12 @@ function CabinetModel(props) {
         mat.transmission = 0.9;
         mat.ior = 1.5;
       }
-      if (mat.name.toLowerCase().includes('polished') || mat.name.toLowerCase().includes('metal')) {
+      if (name.includes('polished') || name.includes('metal')) {
         mat.roughness = 0.1;
         mat.metalness = 1.0;
         mat.envMapIntensity = 2.5;
       }
-      if (mat.name.toLowerCase().includes('black')) {
+      if (name.includes('black')) {
         mat.roughness = 0.4;
         mat.metalness = 0.8;
       }
@@ -30,14 +32,20 @@ function CabinetModel(props) {
     });
 
     if (actions) {
-      Object.values(actions).forEach(action => action.play());
+      Object.values(actions).forEach(action => {
+        if (action) action.play();
+      });
     }
 
+    const cameras = [];
     scene.traverse((child) => {
       if (child.isCamera) {
-        child.visible = false;
-        child.removeFromParent();
+        cameras.push(child);
       }
+    });
+    cameras.forEach(cam => {
+      cam.visible = false;
+      cam.removeFromParent();
     });
   }, [materials, actions, scene]);
 
