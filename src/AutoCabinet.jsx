@@ -11,7 +11,32 @@ function CabinetModel(props) {
   const liftVal = useRef(0);
 
   useEffect(() => {
-    // Rely on KeyShot's native materials. Removed PBR overrides that caused black rendering.
+    // Restore and fix physical glass properties. KeyShot exports glass with a black diffuse map.
+    Object.values(materials).forEach((mat) => {
+      if (!mat || !mat.name) return;
+      const name = mat.name.toLowerCase();
+      
+      if (name.includes('glass')) {
+        mat.transparent = true;
+        mat.transmission = 1.0;
+        mat.opacity = 1.0;
+        mat.roughness = 0.05;
+        mat.ior = 1.5;
+        mat.thickness = 1.0;
+        mat.color.set('#ffffff'); // Fixes the black void
+        mat.needsUpdate = true;
+      }
+      
+      if (name.includes('liquid')) {
+        mat.transparent = true;
+        mat.opacity = 0.85;
+        mat.roughness = 0.1;
+        mat.transmission = 0.9;
+        // Keep native color for liquid, but ensure it catches light
+        mat.envMapIntensity = 2.0;
+        mat.needsUpdate = true;
+      }
+    });
     
     // Only adjust cameras
     const cameras = [];
@@ -28,7 +53,7 @@ function CabinetModel(props) {
       cam.visible = false;
       cam.removeFromParent();
     });
-  }, [scene]);
+  }, [materials, scene]);
 
   useFrame((state, delta) => {
     // Cabinet geometry was created in KeyShot and physically scaled to millimeters natively.
@@ -44,7 +69,7 @@ function CabinetModel(props) {
       if (!node || node.userData.basePos === undefined) return;
       
       const isDrawer = key.includes('DRAWER') || key.includes('ICE') || key.includes('TRAY_');
-      const isLift = key.includes('LIFT') || key.includes('LIQIUD') || key.includes('BOTTLE') || key.includes('CAP') || key.includes('COGNAC') || key.includes('WHISKY') || key.includes('VODKA') || key.includes('SHOT');
+      const isLift = key.includes('LIFT') || key.includes('LIQUI') || key.includes('BOTTLE') || key.includes('CAP') || key.includes('COGNAC') || key.includes('WHISKY') || key.includes('VODKA') || key.includes('SHOT') || key.includes('TOP SHELL');
 
       // KeyShot default group rotation is [-PI/2, 0, 0]. 
       // Inside this local space: Y points OUT, Z points UP.
