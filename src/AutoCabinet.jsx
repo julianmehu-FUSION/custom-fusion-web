@@ -49,18 +49,20 @@ function CabinetModel({ setHoverText, ...props }) {
               return;
            }
 
-           // SURGICAL CULLING: KeyShot clones parts heavily.
-           // Based on your hover diagnostic, the tabs are 100% nested under "LIQUOR LIFT".
-           // We mathematically identify the tabs based on their off-axis positional offset!
-           if (name.startsWith('LIQUOR LIFT')) {
-              child.geometry.computeBoundingBox();
-              const bbox = child.geometry.boundingBox;
-              const cx = (bbox.max.x + bbox.min.x) / 2;
-              const width = bbox.max.x - bbox.min.x;
-              
-              // A side tab is positioned completely to the side (off center offset > radius).
-              // The lift base floor itself is perfectly centrally symmetrical (cx ~ 0).
-              if (Math.abs(cx) > (width * 0.5) + 0.1) {
+           // ULTIMATE GEOMETRIC CULLING: Bypass KeyShot naming entirely!
+           // The tabs are identifiable as they are small floating blocks located strictly on the outer radius.
+           child.geometry.computeBoundingBox();
+           const bbox = child.geometry.boundingBox;
+           const cx = (bbox.max.x + bbox.min.x) / 2;
+           const dx = bbox.max.x - bbox.min.x;
+           const dy = bbox.max.y - bbox.min.y; 
+           const dz = bbox.max.z - bbox.min.z; 
+           
+           // We skip bottles and liquid so drinks placed off-center survive. 
+           // Any other small object (no dimension > 8.2) that exists physically separated off-center gets destroyed. 
+           if (!name.includes('BOTTLE') && !name.includes('GLASS') && !name.includes('CUP') && !name.includes('LIQUID')) {
+              // Mathematical check: is the geometric center significantly offset from local origin (> half its width)
+              if (Math.abs(cx) > (dx * 0.5) + 0.1 && dx < 8.2 && dy < 8.2 && dz < 8.2) {
                   child.visible = false;
                   return;
               }
