@@ -19,9 +19,9 @@ function CabinetModel(props) {
       // Fix KeyShot default black paint for WebGL so it looks like polished plastic instead of a black void
       if (name.includes('black')) {
         mat.color.set('#1a1a1c'); // Dark graphite/off-black for depth
-        mat.roughness = 0.15; // Smooth polished plastic
-        mat.metalness = 0.1; // Plastic is dielectric, not 100% metal
-        mat.envMapIntensity = 1.5;
+        mat.roughness = 0.3; // Smooth polished plastic without sharp mirror reflections
+        mat.metalness = 0.05; // Less metallic reflection
+        mat.envMapIntensity = 1.0; // Dimmer environment reflections
         mat.needsUpdate = true;
       }
 
@@ -71,13 +71,22 @@ function CabinetModel(props) {
   }, [materials, scene]);
 
   useFrame((state, delta) => {
-    // Cabinet geometry was created in KeyShot and physically scaled to millimeters natively.
-    // We must offset them by hundreds of units to see visible movement inside the scale!
-    const targetDrawer = open ? -350 : 0; // Pulls drawer OUT significantly
-    const targetLift = open ? 250 : 0;  // Elevates liquor UP significantly
+    // Uses linear math to simulate a slow, mechanical threaded motor lift
+    const targetDrawer = -0.8; // Safe drawer extension distance 
+    const targetLift = 1.0;  // Safe liquor ascent distance
+    
+    // Constant units per second
+    const speedDrawer = 0.4 * delta;
+    const speedLift = 0.3 * delta;
 
-    drawerVal.current = THREE.MathUtils.damp(drawerVal.current, targetDrawer, 5, delta);
-    liftVal.current = THREE.MathUtils.damp(liftVal.current, targetLift, 4, delta);
+    if (open) {
+      drawerVal.current = Math.max(targetDrawer, drawerVal.current - speedDrawer);
+      liftVal.current = Math.min(targetLift, liftVal.current + speedLift);
+    } else {
+      // Reverse motor
+      drawerVal.current = Math.min(0, drawerVal.current + speedDrawer);
+      liftVal.current = Math.max(0, liftVal.current - speedLift);
+    }
 
     Object.keys(nodes).forEach(key => {
       const node = nodes[key];
@@ -97,15 +106,12 @@ function CabinetModel(props) {
         node.position.z = node.userData.basePos.z + liftVal.current;
       }
     });
-
-    // Make the cabinet very slightly wobble if it's opened to feel mechanical
-    group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, open ? Math.sin(state.clock.elapsedTime * 2) * 0.01 : 0, 0.1);
   });
 
   return (
     <group ref={group} {...props} dispose={null} onClick={(e) => { e.stopPropagation(); setOpen(!open); }}>
-      <PresentationControls global={false} cursor={true} snap={true} speed={1} zoom={1} rotation={[0.1, -Math.PI / 4, 0]} polar={[-0.2, Math.PI / 4]} azimuth={[-Math.PI / 1.5, Math.PI / 1.5]}>
-        <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5}>
+      <PresentationControls global={false} cursor={true} snap={true} speed={1} zoom={1} rotation={[0.0, 0.0, 0]} polar={[-0.2, 0.5]} azimuth={[-Math.PI / 1.5, Math.PI / 1.5]}>
+        <Float speed={1.0} rotationIntensity={0.1} floatIntensity={0.2}>
           <Bounds fit clip observe margin={1.2}>
             <Center>
               <primitive object={scene} />
@@ -113,9 +119,9 @@ function CabinetModel(props) {
           </Bounds>
         </Float>
       </PresentationControls>
-      <Environment preset="studio" intensity={1.5} />
-      <directionalLight position={[10, 10, 5]} intensity={1.5} />
-      <directionalLight position={[-10, 5, -5]} intensity={0.5} />
+      <Environment preset="studio" intensity={1.5} blur={1} />
+      <directionalLight position={[0, 10, 10]} intensity={1.5} />
+      <directionalLight position={[-10, 5, -10]} intensity={0.5} />
       <ambientLight intensity={0.4} />
       <ContactShadows position={[0, -2.5, 0]} opacity={0.6} scale={15} blur={1.5} far={4} />
     </group>
