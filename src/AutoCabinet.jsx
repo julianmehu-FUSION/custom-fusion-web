@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { useGLTF, useAnimations, PresentationControls, Environment, ContactShadows, Float } from '@react-three/drei';
+import { useGLTF, useAnimations, PresentationControls, Environment, ContactShadows, Float, Center, Bounds } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 
 function CabinetModel(props) {
@@ -53,7 +53,11 @@ function CabinetModel(props) {
     <group ref={group} {...props} dispose={null}>
       <PresentationControls global={false} cursor={true} snap={true} speed={1} zoom={1} rotation={[0.1, -Math.PI / 4, 0]} polar={[-0.2, Math.PI / 4]} azimuth={[-Math.PI / 1.5, Math.PI / 1.5]}>
         <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5}>
-          <primitive object={scene} scale={0.025} position={[0, -2, 0]} />
+          <Bounds fit clip observe margin={1.2}>
+            <Center>
+              <primitive object={scene} />
+            </Center>
+          </Bounds>
         </Float>
       </PresentationControls>
       <Environment preset="studio" intensity={1.5} />
