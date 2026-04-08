@@ -241,7 +241,7 @@ function App() {
           </div>
         ) : activeCollection === 'Products' ? (
           activeItem === 'Auto Cabinet' ? (
-            <div style={{ width: '100%', height: '80vh', position: 'relative', background: '#f9f9f9', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0e0e0' }}>
+            <div style={{ width: '100%', height: '80vh', position: 'relative', background: '#ffffff', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0e0e0' }}>
                <button 
                 onClick={() => setActiveItem(null)}
                 style={{ position: 'absolute', top: 20, right: 20, zIndex: 10, background: '#ffffff', border: '1px solid #bba', color: '#333', padding: '0.5rem 1rem', cursor: 'pointer', borderRadius: '4px', textTransform: 'uppercase', fontFamily: 'var(--font-display)' }}
