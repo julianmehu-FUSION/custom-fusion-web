@@ -7,7 +7,7 @@ import * as THREE from 'three';
 const checkIsDrawer = (nameMatch) => nameMatch.includes('DRAWER') || nameMatch.includes('ICE') || nameMatch.includes('TRAY') || nameMatch.includes('CUP') || nameMatch.includes('GLASS');
 
 // Tightly restrict LIFT so random side brackets don't rise
-const checkIsLift = (nameMatch) => nameMatch.includes('BOTTLE') || nameMatch.includes('CAP') || nameMatch.includes('COGNAC') || nameMatch.includes('WHISKY') || nameMatch.includes('VODKA') || nameMatch.includes('SHOT') || nameMatch.includes('LIQUI') || nameMatch.includes('TOP');
+const checkIsLift = (nameMatch) => nameMatch.includes('BOTTLE') || nameMatch.includes('CAP') || nameMatch.includes('COGNAC') || nameMatch.includes('WHISKY') || nameMatch.includes('VODKA') || nameMatch.includes('SHOT') || nameMatch.includes('LIQUI') || nameMatch.includes('TOP') || nameMatch.includes('ALCOHOL');
 
 function CabinetModel({ setHoverText, ...props }) {
   const group = useRef();
@@ -43,8 +43,8 @@ function CabinetModel({ setHoverText, ...props }) {
            const oldMat = child.material;
            child.userData.matFixed = true;
 
-           // HIDE internal mechanical brackets that poke out (and all LIFT frames that have tabs)
-           if (name.includes('BRACKET') || name.includes('TRACK') || name.includes('GEAR') || name.includes('MOTOR') || name.includes('LIFT') || name.includes('DEFAULT')) {
+           // HIDE internal mechanical brackets that poke out
+           if (name.includes('BRACKET') || name === 'LIQUOR LIFT' || name === 'DEFAULT') {
               child.visible = false;
               return;
            }
@@ -55,17 +55,7 @@ function CabinetModel({ setHoverText, ...props }) {
              child.material.color.set('#e0a996');
              child.material.metalness = 1.0;
              child.material.roughness = 0.2;
-           } else if (name.includes('BASE')) {
-             // Polished Cement / Stone Shader ONLY for the base
-             child.material = new THREE.MeshPhysicalMaterial({
-                 color: '#aca8a0',           // Warm concrete grey
-                 roughness: 0.6,             // Porous concrete base
-                 metalness: 0.05,
-                 clearcoat: 1.0,             // Epoxy polish layer
-                 clearcoatRoughness: 0.15    // Slightly irregular polish
-             });
-             child.material.needsUpdate = true;
-           } else if (name.includes('OUTER') || name.includes('TOP') || name.includes('DRAWER') || name.includes('CABINET')) {
+           } else if (name.includes('OUTER') || name.includes('TOP') || name.includes('DRAWER') || name.includes('CABINET') || name.includes('BASE')) {
              // Eggshell White Plastic - FORCE NEW MATERIAL TO STRIP ALL BAKED MESH TEXTURES
              child.material = new THREE.MeshStandardMaterial({
                  color: '#f6f5f1', 
@@ -74,13 +64,18 @@ function CabinetModel({ setHoverText, ...props }) {
                  flatShading: false
              });
            } else if (name.includes('EMBLEM') || name.includes('LOGO')) {
-             // Custom Fusion Rose Gold Logo per request
+             // Custom Fusion Rose Gold Logo 
              child.material = oldMat.clone();
              child.material.color.set('#e0a996'); // Rose gold to match lip
              child.material.metalness = 1.0;
              child.material.roughness = 0.1;
-           } else if (name.includes('GLASS') || name.includes('CUP') || name.includes('BOTTLE')) {
-             // Glass Cups and Bottles - Safely add Basic Transparency to save physical label maps natively!
+             if (!child.userData.recessed) {
+                child.position.y -= 0.5; // Recess logo backwards deeply into the shell
+                if (child.userData.basePos) child.userData.basePos.y -= 0.5; // Update raycast physics baseline
+                child.userData.recessed = true;
+             }
+           } else if (name.includes('GLASS') || name.includes('CUP')) {
+             // Glass Cups (LEAVE BOTTLES ALONE SO BRANDED KEYSHOT LABELS SURVIVE!)
              child.material = oldMat.clone();
              child.material.transparent = true;
              child.material.opacity = 0.4; // Light ghost glass overlay
