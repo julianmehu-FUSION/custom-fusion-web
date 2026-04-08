@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import DodecahedronLogo from './DodecahedronLogo';
+import AutoCabinet from './AutoCabinet';
 import './App.css';
 
 // Split text into individually animated letter spans
@@ -24,6 +25,7 @@ function AnimatedWord({ text, baseDelay, isAccent }) {
 function App() {
   const [loaded, setLoaded] = useState(false);
   const [activeCollection, setActiveCollection] = useState(null);
+  const [activeItem, setActiveItem] = useState(null);
   useEffect(() => {
     document.fonts.ready.then(() => {
       setLoaded(true);
@@ -174,7 +176,11 @@ function App() {
           <h2>{activeCollection ? `Collection / ${activeCollection}` : 'Collections'}</h2>
           {activeCollection && (
             <button 
-              onClick={(e) => { e.preventDefault(); setActiveCollection(null); }}
+              onClick={(e) => { 
+                e.preventDefault(); 
+                if (activeItem) setActiveItem(null);
+                else setActiveCollection(null); 
+              }}
               style={{ background: 'none', border: '1px solid var(--primary-color)', color: 'var(--primary-color)', padding: '0.5rem 1rem', cursor: 'pointer', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '1px', fontFamily: 'var(--font-display)' }}
             >
               ← Back
@@ -234,6 +240,11 @@ function App() {
             </div>
           </div>
         ) : activeCollection === 'Products' ? (
+          activeItem === 'Auto Cabinet' ? (
+            <div style={{ width: '100%', height: '80vh', position: 'relative', background: '#0a0a0c', borderRadius: '8px', overflow: 'hidden', border: '1px solid #1a1a1f' }}>
+               <AutoCabinet />
+            </div>
+          ) : (
           <div className="grid">
             <div className="card">
               <div className="card-image" style={{backgroundImage: "url('/assets/print.jpg')"}}></div>
@@ -241,7 +252,7 @@ function App() {
                 <h3>Print</h3>
               </div>
             </div>
-            <div className="card">
+            <div className="card" onClick={() => setActiveItem('Auto Cabinet')}>
               <div className="card-image" style={{backgroundImage: "url('/assets/industrial.jpg')"}}></div>
               <div className="card-overlay">
                 <h3>Auto Cabinet</h3>
@@ -254,6 +265,7 @@ function App() {
               </div>
             </div>
           </div>
+          )
         ) : null}
       </section>
 
