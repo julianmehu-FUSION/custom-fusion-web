@@ -44,7 +44,7 @@ function CabinetModel({ setHoverText, ...props }) {
            child.userData.matFixed = true;
 
            // HIDE internal mechanical brackets that poke out
-           if (name.includes('BRACKET') || name === 'LIQUOR LIFT' || name === 'DEFAULT') {
+           if (name.includes('BRACKET') || name === 'ALCOHOL LIFT' || name === 'DEFAULT') {
               child.visible = false;
               return;
            }
@@ -55,7 +55,17 @@ function CabinetModel({ setHoverText, ...props }) {
              child.material.color.set('#e0a996');
              child.material.metalness = 1.0;
              child.material.roughness = 0.2;
-           } else if (name.includes('OUTER') || name.includes('TOP') || name.includes('DRAWER') || name.includes('CABINET') || name.includes('BASE')) {
+           } else if (name.includes('BASE')) {
+             // Polished Cement / Stone Shader ONLY for the very bottom foot
+             child.material = new THREE.MeshPhysicalMaterial({
+                 color: '#aca8a0',           
+                 roughness: 0.6,             
+                 metalness: 0.05,
+                 clearcoat: 1.0,             
+                 clearcoatRoughness: 0.15    
+             });
+             child.material.needsUpdate = true;
+           } else if (name.includes('OUTER') || name.includes('TOP') || name.includes('DRAWER') || name.includes('CABINET')) {
              // Eggshell White Plastic - FORCE NEW MATERIAL TO STRIP ALL BAKED MESH TEXTURES
              child.material = new THREE.MeshStandardMaterial({
                  color: '#f6f5f1', 
@@ -70,8 +80,8 @@ function CabinetModel({ setHoverText, ...props }) {
              child.material.metalness = 1.0;
              child.material.roughness = 0.1;
              if (!child.userData.recessed) {
-                child.position.y -= 0.5; // Recess logo backwards deeply into the shell
-                if (child.userData.basePos) child.userData.basePos.y -= 0.5; // Update raycast physics baseline
+                child.position.y -= 0.01; // Recess logo backwards 1mm into the shell
+                if (child.userData.basePos) child.userData.basePos.y -= 0.01; // Update raycast physics baseline
                 child.userData.recessed = true;
              }
            } else if (name.includes('GLASS') || name.includes('CUP')) {
