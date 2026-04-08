@@ -44,13 +44,7 @@ function CabinetModel({ setHoverText, ...props }) {
            child.userData.matFixed = true;
 
            // HIDE internal mechanical brackets that poke out
-           if (
-             name.includes('BRACKET') || 
-             name.includes('GEAR') || 
-             name.includes('MOTOR') || 
-             (name.startsWith('TOP') && !name.includes('SHELL')) || 
-             name === 'DEFAULT'
-           ) {
+           if (name.includes('BRACKET') || name.includes('GEAR') || name.includes('MOTOR') || name === 'DEFAULT') {
               child.visible = false;
               return;
            }
@@ -154,9 +148,8 @@ function CabinetModel({ setHoverText, ...props }) {
                 onPointerOver={(e) => {
                   e.stopPropagation();
                   document.body.style.cursor = 'pointer';
-                  // Calculate if hovering top half or bottom half based on world point bounds roughly
-                  if (e.point.y > 0) setHoverText('Click to Lift Cabinet');
-                  else setHoverText('Click to Open Drawer');
+                  // EXPOSE THE EXACT CAD NAME TO THE SCREEN SO WE KNOW WHAT THE TABS ARE CALLED!
+                  setHoverText(`PART: ${e.object.name.toUpperCase()}`);
                 }}
                 onPointerOut={(e) => {
                   document.body.style.cursor = 'auto';
