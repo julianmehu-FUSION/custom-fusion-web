@@ -4,10 +4,10 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 // Categorize logic for motion
-const checkIsDrawer = (nameMatch) => nameMatch.includes('DRAWER') || nameMatch.includes('ICE') || nameMatch.includes('TRAY') || nameMatch.includes('CUP') || nameMatch.includes('GLASS') || nameMatch.includes('EMBLEM');
+const checkIsDrawer = (nameMatch) => nameMatch.includes('DRAWER') || nameMatch.includes('ICE') || nameMatch.includes('TRAY') || nameMatch.includes('CUP') || nameMatch.includes('GLASS');
 
 // Tightly restrict LIFT so random side brackets don't rise (must be TOP SHELL to lift, not just any TOP)
-const checkIsLift = (nameMatch) => nameMatch.includes('LIFT') || nameMatch.includes('BOTTLE') || nameMatch.includes('CAP') || nameMatch.includes('COGNAC') || nameMatch.includes('WHISKY') || nameMatch.includes('VODKA') || nameMatch.includes('SHOT') || nameMatch.includes('LIQUI') || (nameMatch.includes('TOP') && nameMatch.includes('SHELL'));
+const checkIsLift = (nameMatch) => nameMatch.includes('LIFT') || nameMatch.includes('BOTTLE') || nameMatch.includes('CAP') || nameMatch.includes('COGNAC') || nameMatch.includes('WHISKY') || nameMatch.includes('VODKA') || nameMatch.includes('SHOT') || nameMatch.includes('LIQUI') || nameMatch === 'TOP SHELL';
 
 function CabinetModel({ setHoverText, ...props }) {
   const group = useRef();
@@ -44,7 +44,7 @@ function CabinetModel({ setHoverText, ...props }) {
            child.userData.matFixed = true;
 
            // HIDE internal mechanical brackets that poke out
-           if (name.includes('BRACKET') || name.includes('TRACK') || name.includes('GEAR') || name.includes('MOTOR') || name.includes('STEPMOTOR')) {
+           if (name.includes('BRACKET') || name.includes('TRACK') || name.includes('GEAR') || name.includes('MOTOR') || name === 'TOP' || name === 'LIQUOR LIFT' || name === 'DEFAULT') {
               child.visible = false;
               return;
            }
@@ -55,8 +55,8 @@ function CabinetModel({ setHoverText, ...props }) {
              child.material.color.set('#e0a996');
              child.material.metalness = 1.0;
              child.material.roughness = 0.2;
-           } else if (name.includes('OUTER') || name.includes('TOP') || name.includes('BASE') || name.includes('DRAWER')) {
-             // Polished Cement / Stone Shader
+           } else if (name === 'BASE') {
+             // Polished Cement / Stone Shader ONLY for the base
              child.material = new THREE.MeshPhysicalMaterial({
                  color: '#aca8a0',           // Warm concrete grey
                  roughness: 0.6,             // Porous concrete base
@@ -65,7 +65,15 @@ function CabinetModel({ setHoverText, ...props }) {
                  clearcoatRoughness: 0.15    // Slightly irregular polish
              });
              child.material.needsUpdate = true;
-           } else if (name.includes('EMBLEM')) {
+           } else if (name.includes('OUTER') || name.includes('TOP SHELL') || name.includes('DRAWER') || name.includes('CABINET')) {
+             // Eggshell White Plastic - FORCE NEW MATERIAL TO STRIP ALL BAKED MESH TEXTURES
+             child.material = new THREE.MeshStandardMaterial({
+                 color: '#f6f5f1', 
+                 metalness: 0.0,
+                 roughness: 0.35,
+                 flatShading: false
+             });
+           } else if (name.includes('EMBLEM') || name.includes('LOGO')) {
              // Custom Fusion Rose Gold Logo per request
              child.material = oldMat.clone();
              child.material.color.set('#e0a996'); // Rose gold to match lip
@@ -98,9 +106,9 @@ function CabinetModel({ setHoverText, ...props }) {
   useFrame((state, delta) => {
     // Threaded motor lift physics - targeting positive outward vector
     const targetDrawer = 15.0; // Drawers extend outwards positively
-    const targetLift = 8.0;  // Lift extends upwards positively
+    const targetLift = 15.0;  // Lift must rise high enough to expose all bottle necks
     const speedDrawer = 10.5 * delta;
-    const speedLift = 5.5 * delta;
+    const speedLift = 8.5 * delta;
 
     if (openDrawer) drawerVal.current = Math.min(targetDrawer, drawerVal.current + speedDrawer);
     else drawerVal.current = Math.max(0, drawerVal.current - speedDrawer);
