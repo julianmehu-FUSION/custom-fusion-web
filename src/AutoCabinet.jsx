@@ -44,16 +44,14 @@ function CabinetModel({ setHoverText, ...props }) {
            child.userData.matFixed = true;
 
            // WE EXPLICITLY SHIELD THE "GEAR TRACK" SO THE SLIDER RAILS DO NOT GO MISSING!
-           // But we still hide the brackets and ugly motors.
            if (name.includes('BRACKET') || name.includes('MOTOR') || name === 'DEFAULT' || (name.includes('GEAR') && !name.includes('TRACK'))) {
               child.visible = false;
               return;
            }
 
-           // PROVEN GEOMETRIC TAB CULLING:
-           // The tabs hide under structural groups like LIFT or TOP in KeyShot. 
-           // We isolate any mesh in those groups that is small and aggressively off axis!
-           if (name.includes('LIFT') || name.startsWith('TOP')) {
+           // PROVEN GEOMETRIC TAB CULLING (TARGETING TOP TABS ONLY):
+           // By keeping this strictly off the 'LIFT' namespace, we guarantee the entire Lift Floor perfectly survives!!
+           if (name.startsWith('TOP')) {
               child.geometry.computeBoundingBox();
               const bbox = child.geometry.boundingBox;
               const cx = (bbox.max.x + bbox.min.x) / 2;
@@ -74,7 +72,6 @@ function CabinetModel({ setHoverText, ...props }) {
              child.material.metalness = 1.0;
              child.material.roughness = 0.2;
            } else if (name.includes('BASE')) {
-             // Polished Base
              child.material = new THREE.MeshPhysicalMaterial({
                  color: '#aca8a0',           
                  roughness: 0.6,             
@@ -84,13 +81,23 @@ function CabinetModel({ setHoverText, ...props }) {
              });
              child.material.needsUpdate = true;
            } else if (name.includes('OUTER') || name.includes('CABINET') || name.includes('TOP') || name.includes('DRAWER')) {
-             // Eggshell White Plastic for Outer Shells, Top Lids, and Drawer
-             child.material = new THREE.MeshStandardMaterial({
-                 color: '#f6f5f1', 
-                 metalness: 0.0,
-                 roughness: 0.35,
-                 flatShading: false
-             });
+             // SAFE EGGHSHELL WHITE MAPPING: Prevents useProgram shader WebGL crashes by mutating existing materials
+             // This gives the Drawer and Top the beautiful eggshell color without stripping their internal physics maps!
+             child.material = oldMat.clone();
+             
+             const paintEggshell = (m) => {
+                 m.color.set('#f6f5f1');
+                 m.metalness = 0.0;
+                 m.roughness = 0.35;
+                 m.map = null; // Strip dirty CAD textures
+                 m.needsUpdate = true;
+             };
+             
+             if (Array.isArray(child.material)) {
+                 child.material.forEach(paintEggshell);
+             } else {
+                 paintEggshell(child.material);
+             }
            } else if (name.includes('EMBLEM') || name.includes('LOGO')) {
              child.material = oldMat.clone();
              child.material.color.set('#e0a996'); 
@@ -109,12 +116,12 @@ function CabinetModel({ setHoverText, ...props }) {
              child.material.roughness = 0.1;
              child.material.envMapIntensity = 2.0;
            } else if (name.includes('LIQUID')) {
-             // Alcohol Simulation
              child.material = oldMat.clone();
              child.material.color.set('#d48f37'); 
              child.material.transparent = true;
              child.material.opacity = 0.95;
            } else {
+             // Catch all restoring items like the BOTTLES which need their baked KeyShot textures!
              child.material = oldMat.clone();
            }
         }
