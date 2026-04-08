@@ -44,9 +44,25 @@ function CabinetModel({ setHoverText, ...props }) {
            child.userData.matFixed = true;
 
            // HIDE internal mechanical brackets that poke out
-           if (name.includes('BRACKET') || name.includes('GEAR') || name.includes('MOTOR') || name === 'DEFAULT' || name.includes('ALCOHOL LIFT')) {
+           if (name.includes('BRACKET') || name.includes('GEAR') || name.includes('MOTOR') || name === 'DEFAULT') {
               child.visible = false;
               return;
+           }
+
+           // SURGICAL CULLING: KeyShot clones parts heavily.
+           // To keep the floor but destroy the floating tabs, we check their physical position!
+           // If a part is floating far to the left or right of center, it is a tab. Kill it!
+           if (name.includes('LIFT') || name.startsWith('TOP')) {
+              child.geometry.computeBoundingBox();
+              const bbox = child.geometry.boundingBox;
+              const cx = (bbox.max.x + bbox.min.x) / 2;
+              const width = bbox.max.x - bbox.min.x;
+              
+              // If the object's center is offset significantly from 0 on the X axis, it's a side tab!
+              if (Math.abs(cx) > (width * 0.5) + 0.1) {
+                  child.visible = false;
+                  return;
+              }
            }
 
            if (name.includes('LINER')) {
@@ -148,8 +164,8 @@ function CabinetModel({ setHoverText, ...props }) {
                 onPointerOver={(e) => {
                   e.stopPropagation();
                   document.body.style.cursor = 'pointer';
-                  // EXPOSE THE EXACT CAD NAME TO THE SCREEN SO WE KNOW WHAT THE TABS ARE CALLED!
-                  setHoverText(`PART: ${e.object.name.toUpperCase()}`);
+                  if (e.point.y > 0) setHoverText('Click to Lift Cabinet');
+                  else setHoverText('Click to Open Drawer');
                 }}
                 onPointerOut={(e) => {
                   document.body.style.cursor = 'auto';
