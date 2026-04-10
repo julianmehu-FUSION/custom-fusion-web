@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import DodecahedronLogo from './DodecahedronLogo';
 import AutoCabinet from './AutoCabinet';
+import FingerprintChair from './FingerprintChair';
 import './App.css';
 
 // Split text into individually animated letter spans
@@ -219,26 +220,50 @@ function App() {
               </div>
            </div>
         ) : activeCollection === 'Furniture' ? (
-          <div className="grid">
-            <div className="card">
-              <div className="card-image" style={{backgroundImage: "url('/assets/float.jpg')"}}></div>
-              <div className="card-overlay">
-                <h3>Float</h3>
-              </div>
+          activeItem === 'Fingerprint Chair' ? (
+            <div style={{ width: '100%', height: '80vh', position: 'relative', background: '#f5f5f7', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0e0e0' }}>
+               <button 
+                onClick={() => setActiveItem(null)}
+                style={{ position: 'absolute', top: 20, right: 20, zIndex: 10, background: '#ffffff', border: '1px solid #bba', color: '#333', padding: '0.5rem 1rem', cursor: 'pointer', borderRadius: '4px', textTransform: 'uppercase', fontFamily: 'var(--font-display)' }}
+               >
+                 Close Viewer
+               </button>
+               <FingerprintChair />
             </div>
-            <div className="card">
-              <div className="card-image" style={{backgroundImage: "url('/assets/torus.jpg')"}}></div>
-              <div className="card-overlay">
-                <h3>Torus Chair</h3>
-              </div>
-            </div>
-            <div className="card">
-              <div className="card-image" style={{backgroundImage: "url('/assets/lamp.jpg')"}}></div>
-              <div className="card-overlay">
-                <h3>Geo Lamp</h3>
-              </div>
-            </div>
-          </div>
+          ) : (
+           <div className="grid">
+             <div className="card">
+               <div className="card-image" style={{backgroundImage: "url('/assets/float.jpg')"}}></div>
+               <div className="card-overlay">
+                 <h3>Float</h3>
+               </div>
+             </div>
+             <div className="card" onClick={() => setActiveItem('Fingerprint Chair')}>
+               <div className="card-image" style={{backgroundImage: "url('/assets/fingerprint_chair_thumbnail.png')"}}></div>
+               <div className="card-overlay">
+                 <h3>Fingerprint Chair</h3>
+               </div>
+             </div>
+             <div className="card">
+               <div className="card-image" style={{backgroundImage: "url('/assets/torus.jpg')"}}></div>
+               <div className="card-overlay">
+                 <h3>Torus Chair</h3>
+               </div>
+             </div>
+             <div className="card">
+               <div className="card-image" style={{backgroundImage: "url('/assets/lamp.jpg')"}}></div>
+               <div className="card-overlay">
+                 <h3>Geo Lamp</h3>
+               </div>
+             </div>
+             <div className="card">
+               <div className="card-image" style={{backgroundImage: "url('/assets/print.jpg')"}}></div>
+               <div className="card-overlay">
+                 <h3>Print</h3>
+               </div>
+             </div>
+           </div>
+          )
         ) : activeCollection === 'Products' ? (
           activeItem === 'Auto Cabinet' ? (
             <div style={{ width: '100%', height: '80vh', position: 'relative', background: '#ffffff', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0e0e0' }}>
@@ -252,12 +277,6 @@ function App() {
             </div>
           ) : (
           <div className="grid">
-            <div className="card">
-              <div className="card-image" style={{backgroundImage: "url('/assets/print.jpg')"}}></div>
-              <div className="card-overlay">
-                <h3>Print</h3>
-              </div>
-            </div>
             <div className="card" onClick={() => setActiveItem('Auto Cabinet')}>
               <div className="card-image" style={{backgroundImage: "url('/assets/autocabinet_thumbnail.jpg')"}}></div>
               <div className="card-overlay">
