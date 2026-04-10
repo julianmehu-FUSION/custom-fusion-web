@@ -3,15 +3,31 @@ import { useGLTF, PresentationControls, Environment, ContactShadows, Float, Cent
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-// Categorize logic for motion
-const checkIsDrawer = (nameMatch) => nameMatch.includes('DRAWER') || nameMatch.includes('ICE') || nameMatch.includes('TRAY') || nameMatch.includes('CUP') || nameMatch.includes('GLASS');
+import { Html, useProgress } from '@react-three/drei';
 
-// Tightly restrict LIFT so random side brackets don't rise
-const checkIsLift = (nameMatch) => nameMatch.includes('BOTTLE') || nameMatch.includes('CAP') || nameMatch.includes('COGNAC') || nameMatch.includes('WHISKY') || nameMatch.includes('VODKA') || nameMatch.includes('SHOT') || nameMatch.includes('LIQUI') || nameMatch.includes('TOP') || nameMatch.includes('ALCOHOL');
+function Loader() {
+  const { progress } = useProgress()
+  return <Html center><div style={{ color: '#888', whiteSpace: 'nowrap', fontFamily: 'var(--font-[family-name:var(--font-sans)])' }}>Loading Model... {Math.round(progress)}%</div></Html>
+}
+
+// Categorize logic for motion by explicitly targeting the user's cleanly separated parent groups
+// We will evaluate this on individual meshes to prevent double-translation!
+const isDrawerItem = (mesh) => {
+  let p = mesh;
+  while(p) { if (p.name === 'ICE DRAWER') return true; p = p.parent; }
+  return false;
+};
+
+// Tightly restrict LIFT so it exclusively targets the TOP assembly inside the ALCOHOL LIFT body
+const isLiftItem = (mesh) => {
+  let p = mesh;
+  while(p) { if (p.name === 'TOP' && p.parent && p.parent.name === 'ALCOHOL LIFT') return true; p = p.parent; }
+  return false;
+};
 
 function CabinetModel({ setHoverText, ...props }) {
   const group = useRef();
-  const { scene, nodes } = useGLTF('/assets/autocabinet.glb');
+  const { scene, nodes } = useGLTF('/assets/new_liquor_cabinet.glb');
   
   // Separate states
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -21,22 +37,33 @@ function CabinetModel({ setHoverText, ...props }) {
   const liftVal = useRef(0);
 
   useEffect(() => {
+    console.group('GLTF Node Audit');
+    scene.traverse(child => {
+      if (child.name) console.log(`[${child.type}] "${child.name}"`);
+    });
+    console.groupEnd();
+
     // Manually force all CAD materials surgically per user request
     const cameras = [];
     scene.traverse((child) => {
+      if (child.userData.basePos === undefined) {
+        child.userData.basePos = child.position.clone();
+      }
+
       if (child.isCamera) {
         cameras.push(child);
       }
       if (child.isMesh) {
-        if (child.userData.basePos === undefined) {
-          child.userData.basePos = child.position.clone();
-        }
-        
         // Resolve self-shadowing acne that makes CAD models appear black
         child.castShadow = true;
         child.receiveShadow = false;
-
+        
         const name = child.name.toUpperCase();
+        
+        // Remove weird shadows from the front exterior shell by disabling self-casting for the outer body!
+        if (name.includes('OUTER') || name.includes('CABINET') || name.includes('TOP SHELL')) {
+             child.castShadow = false;
+        }
 
         // Safely upgrade or mutate materials, preserving UV maps where needed!
         if (!child.userData.matFixed && child.material) {
@@ -65,51 +92,38 @@ function CabinetModel({ setHoverText, ...props }) {
               }
            }
 
-           // EXACT MATERIAL MATCHING FOR PERFECT VISUAL COLOR
-           if (name.includes('LINER')) {
+           // GLOSS WHITE SHELL requested by user. Safely override by mapping exist material instead of creating new ones
+           if (name.includes('OUTER') || name.includes('CABINET') || name.includes('TOP SHELL') || name.includes('DRAWER')) {
              child.material = oldMat.clone();
-             child.material.color.set('#e0a996');
-             child.material.metalness = 1.0;
-             child.material.roughness = 0.2;
-           } else if (name.includes('BASE')) {
-             child.material = new THREE.MeshPhysicalMaterial({
-                 color: '#aca8a0',           
-                 roughness: 0.6,             
-                 metalness: 0.05,
-                 clearcoat: 1.0,             
-                 clearcoatRoughness: 0.15    
-             });
-             child.material.needsUpdate = true;
-           } else if (name.includes('OUTER') || name.includes('CABINET') || name.includes('TOP') || name.includes('DRAWER')) {
-             // SAFE EGGHSHELL WHITE MAPPING: Prevents useProgram shader WebGL crashes by mutating existing materials
-             // This gives the Drawer and Top the beautiful eggshell color without stripping their internal physics maps!
-             child.material = oldMat.clone();
-             
-             const paintEggshell = (m) => {
-                 m.color.set('#f6f5f1');
-                 m.metalness = 0.0;
-                 m.roughness = 0.35;
-                 m.map = null; // Strip dirty CAD textures
+             const paintGlossWhite = (m) => {
+                 if (m.color) m.color.set('#ffffff');
+                 m.metalness = 0.1;
+                 m.roughness = 0.1; 
+                 m.map = null; 
+                 if (m.normalMap) m.normalMap = null;
                  m.needsUpdate = true;
              };
-             
-             if (Array.isArray(child.material)) {
-                 child.material.forEach(paintEggshell);
-             } else {
-                 paintEggshell(child.material);
-             }
+             if (Array.isArray(child.material)) child.material.forEach(paintGlossWhite);
+             else paintGlossWhite(child.material);
            } else if (name.includes('EMBLEM') || name.includes('LOGO')) {
              child.material = oldMat.clone();
-             child.material.color.set('#e0a996'); 
+             child.material.color.set('#e5e4e2'); // Platinum metal
              child.material.metalness = 1.0;
-             child.material.roughness = 0.1;
+             child.material.roughness = 0.2;
              if (!child.userData.recessed) {
                 child.position.y -= 0.01; 
                 if (child.userData.basePos) child.userData.basePos.y -= 0.01; 
                 child.userData.recessed = true;
              }
+           } else if (name.includes('LINER')) {
+             child.material = oldMat.clone();
+             child.material.color.set('#e0a996');
+             child.material.metalness = 1.0;
+             child.material.roughness = 0.2;
+           } else if (name.includes('BASE')) {
+             child.material = oldMat.clone();
+             child.material.color.set('#aca8a0');
            } else if ((name.includes('GLASS') || name.includes('CUP')) && !name.includes('MAT')) {
-             // Vodka, Shot, and Cognac glasses mapped beautifully to Ghost Glass
              child.material = oldMat.clone();
              child.material.transparent = true;
              child.material.opacity = 0.4; 
@@ -122,7 +136,7 @@ function CabinetModel({ setHoverText, ...props }) {
              child.material.opacity = 0.95;
            } else {
              // Catch all restoring items like the BOTTLES which need their baked KeyShot textures!
-             child.material = oldMat.clone();
+             child.material = oldMat;
            }
         }
       }
@@ -135,33 +149,27 @@ function CabinetModel({ setHoverText, ...props }) {
   }, [scene]);
 
   useFrame((state, delta) => {
-    // Threaded motor lift physics - targeting positive outward vector
-    const targetDrawer = 15.0; // Drawers extend outwards positively
-    const targetLift = 15.0;  // Lift must rise high enough to expose all bottle necks
-    const speedDrawer = 10.5 * delta;
-    const speedLift = 8.5 * delta;
+    // Threaded motor lift physics - scaled to mm exports
+    const targetDrawer = -15.0; 
+    const targetLift = 20.0;  
+    const speedDrawer = 10.0 * delta;
+    const speedLift = 15.0 * delta;
 
-    if (openDrawer) drawerVal.current = Math.min(targetDrawer, drawerVal.current + speedDrawer);
-    else drawerVal.current = Math.max(0, drawerVal.current - speedDrawer);
+    if (openDrawer) drawerVal.current = Math.max(targetDrawer, drawerVal.current - speedDrawer);
+    else drawerVal.current = Math.min(0, drawerVal.current + speedDrawer);
 
     if (openLift) liftVal.current = Math.min(targetLift, liftVal.current + speedLift);
     else liftVal.current = Math.max(0, liftVal.current - speedLift);
 
-    // DYNAMIC ANIMATION GROUPS: Explicitly mapped via the Node structure
-    const checkIsDrawer = (n) => n.includes('DRAWER') || n.includes('ICE') || n.includes('TRACK') || n.includes('MAT') || n.includes('LINER') || n.includes('VODKA') || n.includes('SHOT') || n === 'GLASSES';
-    const checkIsLift = (n) => n.includes('BOTTLE') || n.includes('CAP') || n.includes('LIQUOR LIFT') || n.includes('ALCOHOL LIFT') || n.includes('COGNAC') || n.includes('LIQUID') || n.includes('LABEL') || n.includes('WHISKY') || n.includes('GIN') || n.includes('BTL');
-
-    Object.keys(nodes).forEach(key => {
-      const node = nodes[key];
-      if (!node || node.userData.basePos === undefined) return;
+    scene.traverse((child) => {
+      if (!child.userData.basePos) return;
       
-      const nameMatch = key.toUpperCase();
-      
-      if (checkIsDrawer(nameMatch)) {
-        node.position.z = node.userData.basePos.z + drawerVal.current; // Drawer runs OUT on local Z
+      // ONLY translate meshes (child.isMesh). If we translated groups, their child meshes would move twice!
+      if (child.isMesh && isDrawerItem(child)) {
+        child.position.y = child.userData.basePos.y + drawerVal.current;
       }
-      if (checkIsLift(nameMatch)) {
-        node.position.y = node.userData.basePos.y + liftVal.current; // Lift runs UP on local Y
+      if (child.isMesh && isLiftItem(child)) {
+        child.position.z = child.userData.basePos.z + liftVal.current;
       }
     });
   });
@@ -248,7 +256,7 @@ export default function AutoCabinet() {
 
       <Canvas shadows camera={{ position: [0, 0, 8], fov: 45 }} dpr={[1, 2]}>
         <SoftShadows size={25} samples={10} focus={0.5} />
-        <React.Suspense fallback={null}>
+        <React.Suspense fallback={<Loader />}>
           <CabinetModel setHoverText={setHoverText} />
         </React.Suspense>
       </Canvas>
@@ -256,6 +264,6 @@ export default function AutoCabinet() {
   );
 }
 
-useGLTF.preload('/assets/autocabinet.glb');
+useGLTF.preload('/assets/new_liquor_cabinet.glb');
 
 
