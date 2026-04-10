@@ -220,7 +220,7 @@ function App() {
               </div>
            </div>
         ) : activeCollection === 'Furniture' ? (
-          activeItem === 'Fingerprint Chair' ? (
+          activeItem === 'Print Chair' ? (
             <div style={{ width: '100%', height: '80vh', position: 'relative', background: '#f5f5f7', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0e0e0' }}>
                <button 
                 onClick={() => setActiveItem(null)}
@@ -235,19 +235,13 @@ function App() {
              <div className="card">
                <div className="card-image" style={{backgroundImage: "url('/assets/float.jpg')"}}></div>
                <div className="card-overlay">
-                 <h3>Float</h3>
+                 <h3>Float Bench</h3>
                </div>
              </div>
-             <div className="card" onClick={() => setActiveItem('Fingerprint Chair')}>
+             <div className="card" onClick={() => setActiveItem('Print Chair')}>
                <div className="card-image" style={{backgroundImage: "url('/assets/fingerprint_chair_thumbnail.png')"}}></div>
                <div className="card-overlay">
-                 <h3>Fingerprint Chair</h3>
-               </div>
-             </div>
-             <div className="card">
-               <div className="card-image" style={{backgroundImage: "url('/assets/torus.jpg')"}}></div>
-               <div className="card-overlay">
-                 <h3>Torus Chair</h3>
+                 <h3>Print Chair</h3>
                </div>
              </div>
              <div className="card">
@@ -259,7 +253,13 @@ function App() {
              <div className="card">
                <div className="card-image" style={{backgroundImage: "url('/assets/print.jpg')"}}></div>
                <div className="card-overlay">
-                 <h3>Print</h3>
+                 <h3>Print Table</h3>
+               </div>
+             </div>
+             <div className="card">
+               <div className="card-image" style={{backgroundImage: "url('/assets/torus.jpg')"}}></div>
+               <div className="card-overlay">
+                 <h3>Torus Chair X</h3>
                </div>
              </div>
            </div>
