@@ -204,7 +204,7 @@ function App() {
               </div>
             </div>
             <div className="card" onClick={() => setActiveCollection('Products')}>
-              <div className="card-image" style={{backgroundImage: "url('/assets/products.jpg')"}}></div>
+              <div className="card-image" style={{backgroundImage: "url('/assets/products_cover.jpg')"}}></div>
               <div className="card-overlay">
                 <h3>Products</h3>
               </div>
