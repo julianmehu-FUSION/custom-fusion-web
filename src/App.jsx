@@ -60,9 +60,9 @@ const ITEM_DETAILS = {
     gallery: [],
   },
   'Print Table': {
-    hero: '/assets/print.jpg',
+    hero: '/assets/line.png',
     description: 'A coffee table whose surface carries the same fingerprint language as the Print Chair — designed to live together.',
-    images: [{ src: '/assets/print.jpg', label: 'PRINT TABLE' }],
+    images: [{ src: '/assets/line.png', label: 'PRINT TABLE' }],
     gallery: [],
   },
   'Torus Chair X': {
@@ -110,15 +110,15 @@ const ITEM_DETAILS = {
     gallery: [],
   },
   'Maze': {
-    hero: '/assets/maze.jpg',
+    hero: '/assets/maze.png',
     description: 'The MAZE collection draws from labyrinthine geometry to create storage, dressers, and architectural furniture.',
-    images: [{ src: '/assets/maze.jpg', label: 'MAZE' }],
+    images: [{ src: '/assets/maze.png', label: 'MAZE' }],
     gallery: [],
   },
   'Line': {
-    hero: '/assets/print.jpg',
+    hero: '/assets/line.png',
     description: 'The LINE collection channels precise geometric lines into tables, shelving, and minimalist furniture forms.',
-    images: [{ src: '/assets/print.jpg', label: 'LINE' }],
+    images: [{ src: '/assets/line.png', label: 'LINE' }],
     gallery: [],
   },
 };
@@ -330,7 +330,7 @@ function App() {
         {!activeCollection ? (
           <div className="grid">
             <div className="card" onClick={() => setActiveCollection('Architecture')}>
-              <div className="card-image" style={{backgroundImage: "url('/assets/maze.jpg')"}}></div>
+              <div className="card-image" style={{backgroundImage: "url('/assets/maze.png')"}}></div>
               <div className="card-overlay"><h3>Architecture</h3></div>
             </div>
             <div className="card" onClick={() => setActiveCollection('Furniture')}>
@@ -375,11 +375,11 @@ function App() {
                 <div className="card-overlay"><h3>Float</h3></div>
               </div>
               <div className="card" onClick={() => setActiveItem('Maze')}>
-                <div className="card-image" style={{backgroundImage: "url('/assets/maze.jpg')"}}></div>
+                <div className="card-image" style={{backgroundImage: "url('/assets/maze.png')"}}></div>
                 <div className="card-overlay"><h3>Maze</h3></div>
               </div>
               <div className="card" onClick={() => setActiveItem('Line')}>
-                <div className="card-image" style={{backgroundImage: "url('/assets/print.jpg')"}}></div>
+                <div className="card-image" style={{backgroundImage: "url('/assets/line.png')"}}></div>
                 <div className="card-overlay"><h3>Line</h3></div>
               </div>
             </div>
