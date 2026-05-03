@@ -97,6 +97,56 @@ const ITEM_DETAILS = {
     images: [{ src: '/assets/torus.jpg', label: 'TORUS' }],
     gallery: [],
   },
+  'Torus Canopy': {
+    hero: '/assets/torus_canopy_01.jpg',
+    description: 'The TORUS CANOPY wraps its occupant in a continuous steel arc — a cantilevered shelter that doubles as seating.',
+    images: [
+      { src: '/assets/torus_canopy_01.jpg', label: 'CANOPY — VIEW 01' },
+      { src: '/assets/torus_canopy_02.jpg', label: 'CANOPY — VIEW 02' },
+      { src: '/assets/torus_canopy_03.jpg', label: 'CANOPY — VIEW 03' },
+      { src: '/assets/torus_canopy_04.jpg', label: 'CANOPY — VIEW 04' },
+    ],
+    gallery: [],
+  },
+  'Torus Swing': {
+    hero: '/assets/torus.jpg',
+    description: 'The TORUS SWING suspends a continuous torus frame from a single tension point — motion and form unified.',
+    images: [{ src: '/assets/torus.jpg', label: 'SWING — COMING SOON' }],
+    gallery: [],
+  },
+  'Torus Lounge': {
+    hero: '/assets/torus_lounge_01.png',
+    description: 'The TORUS LOUNGE Chair wraps chrome-steel tubing into a seamless reclined frame with tension-woven seating.',
+    images: [
+      { src: '/assets/torus_lounge_01.png', label: 'LOUNGE — VIEW 01' },
+      { src: '/assets/torus_lounge_02.png', label: 'LOUNGE — VIEW 02' },
+      { src: '/assets/torus_lounge_03.png', label: 'LOUNGE — VIEW 03' },
+      { src: '/assets/torus_lounge_04.png', label: 'LOUNGE — VIEW 04' },
+    ],
+    gallery: [],
+  },
+  'Torus Recliner': {
+    hero: '/assets/torus_recliner_01.jpg',
+    description: 'The TORUS RECLINER extends the circular frame language into a full-recline position — chrome steel, zero compromise.',
+    images: [
+      { src: '/assets/torus_recliner_01.jpg', label: 'RECLINER — VIEW 01' },
+      { src: '/assets/torus_recliner_02.jpg', label: 'RECLINER — VIEW 02' },
+      { src: '/assets/torus_recliner_03.jpg', label: 'RECLINER — VIEW 03' },
+      { src: '/assets/torus_recliner_04.jpg', label: 'RECLINER — VIEW 04' },
+    ],
+    gallery: [],
+  },
+  'Torus Foot Rest': {
+    hero: '/assets/torus_footrest_01.jpg',
+    description: 'The TORUS FOOT REST completes the collection — a low torus-frame ottoman with precision-upholstered surface.',
+    images: [
+      { src: '/assets/torus_footrest_01.jpg', label: 'FOOT REST — VIEW 01' },
+      { src: '/assets/torus_footrest_02.jpg', label: 'FOOT REST — VIEW 02' },
+      { src: '/assets/torus_footrest_03.jpg', label: 'FOOT REST — VIEW 03' },
+      { src: '/assets/torus_footrest_04.jpg', label: 'FOOT REST — VIEW 04' },
+    ],
+    gallery: [],
+  },
   'Print': {
     hero: '/assets/print_collection.jpg',
     description: 'The PRINT collection uses fingerprint and organic pattern language across seating, tables, and surfaces.',
@@ -189,6 +239,7 @@ function App() {
   const [loaded, setLoaded] = useState(false);
   const [activeCollection, setActiveCollection] = useState(null);
   const [activeItem, setActiveItem] = useState(null);
+  const [activeSubItem, setActiveSubItem] = useState(null);
 
   useEffect(() => {
     document.fonts.ready.then(() => setLoaded(true));
@@ -314,14 +365,16 @@ function App() {
       <section id="collections" className="portfolio">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem' }}>
           <h2>
-            {activeItem
+            {activeSubItem
+              ? `Collection / ${activeCollection} / ${activeItem} / ${activeSubItem}`
+              : activeItem
               ? `Collection / ${activeCollection} / ${activeItem}`
               : activeCollection
               ? `Collection / ${activeCollection}`
               : 'Collections'}
           </h2>
           {activeCollection && (
-            <button onClick={(e) => { e.preventDefault(); if (activeItem) setActiveItem(null); else setActiveCollection(null); }} style={backBtnStyle}>
+            <button onClick={(e) => { e.preventDefault(); if (activeSubItem) setActiveSubItem(null); else if (activeItem) setActiveItem(null); else setActiveCollection(null); }} style={backBtnStyle}>
               ← Back
             </button>
           )}
@@ -358,7 +411,32 @@ function App() {
         ) : null}
 
         {activeCollection === 'Furniture' ? (
-          activeItem ? (
+          activeSubItem ? (
+            <ItemDetail itemName={activeSubItem} onBack={() => setActiveSubItem(null)} />
+          ) : activeItem === 'Torus' ? (
+            <div className="grid">
+              <div className="card" onClick={() => setActiveSubItem('Torus Canopy')}>
+                <div className="card-image" style={{backgroundImage: "url('/assets/torus_canopy_01.jpg')"}}></div>
+                <div className="card-overlay"><h3>Canopy</h3></div>
+              </div>
+              <div className="card" onClick={() => setActiveSubItem('Torus Swing')}>
+                <div className="card-image" style={{backgroundImage: "url('/assets/torus.jpg')"}}></div>
+                <div className="card-overlay"><h3>Swing</h3></div>
+              </div>
+              <div className="card" onClick={() => setActiveSubItem('Torus Lounge')}>
+                <div className="card-image" style={{backgroundImage: "url('/assets/torus_lounge_01.png')"}}></div>
+                <div className="card-overlay"><h3>Lounge</h3></div>
+              </div>
+              <div className="card" onClick={() => setActiveSubItem('Torus Recliner')}>
+                <div className="card-image" style={{backgroundImage: "url('/assets/torus_recliner_01.jpg')"}}></div>
+                <div className="card-overlay"><h3>Recliner</h3></div>
+              </div>
+              <div className="card" onClick={() => setActiveSubItem('Torus Foot Rest')}>
+                <div className="card-image" style={{backgroundImage: "url('/assets/torus_footrest_01.jpg')"}}></div>
+                <div className="card-overlay"><h3>Foot Rest</h3></div>
+              </div>
+            </div>
+          ) : activeItem ? (
             <ItemDetail itemName={activeItem} onBack={() => setActiveItem(null)} />
           ) : (
             <div className="grid">
