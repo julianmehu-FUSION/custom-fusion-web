@@ -415,23 +415,23 @@ function App() {
             <ItemDetail itemName={activeSubItem} onBack={() => setActiveSubItem(null)} />
           ) : activeItem === 'Torus' ? (
             <div className="grid">
-              <div className="card" onClick={() => setActiveSubItem('Torus Canopy')}>
+              <div className="card">
                 <div className="card-image" style={{backgroundImage: "url('/assets/torus_canopy_01.jpg')"}}></div>
                 <div className="card-overlay"><h3>Canopy</h3></div>
               </div>
-              <div className="card" onClick={() => setActiveSubItem('Torus Swing')}>
+              <div className="card">
                 <div className="card-image" style={{backgroundImage: "url('/assets/torus.jpg')"}}></div>
                 <div className="card-overlay"><h3>Swing</h3></div>
               </div>
-              <div className="card" onClick={() => setActiveSubItem('Torus Lounge')}>
+              <div className="card">
                 <div className="card-image" style={{backgroundImage: "url('/assets/torus_lounge_01.png')"}}></div>
                 <div className="card-overlay"><h3>Lounge</h3></div>
               </div>
-              <div className="card" onClick={() => setActiveSubItem('Torus Recliner')}>
+              <div className="card">
                 <div className="card-image" style={{backgroundImage: "url('/assets/torus_recliner_01.jpg')"}}></div>
                 <div className="card-overlay"><h3>Recliner</h3></div>
               </div>
-              <div className="card" onClick={() => setActiveSubItem('Torus Foot Rest')}>
+              <div className="card">
                 <div className="card-image" style={{backgroundImage: "url('/assets/torus_footrest_01.jpg')"}}></div>
                 <div className="card-overlay"><h3>Foot Rest</h3></div>
               </div>
