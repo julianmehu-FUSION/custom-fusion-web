@@ -98,9 +98,9 @@ const ITEM_DETAILS = {
     gallery: [],
   },
   'Print': {
-    hero: '/assets/print.png',
+    hero: '/assets/print_collection.jpg',
     description: 'The PRINT collection uses fingerprint and organic pattern language across seating, tables, and surfaces.',
-    images: [{ src: '/assets/print.png', label: 'PRINT' }],
+    images: [{ src: '/assets/print_collection.jpg', label: 'PRINT' }],
     gallery: [],
   },
   'Float': {
@@ -367,7 +367,7 @@ function App() {
                 <div className="card-overlay"><h3>Torus</h3></div>
               </div>
               <div className="card" onClick={() => setActiveItem('Print')}>
-                <div className="card-image" style={{backgroundImage: "url('/assets/print.png')"}}></div>
+                <div className="card-image" style={{backgroundImage: "url('/assets/print_collection.jpg')"}}></div>
                 <div className="card-overlay"><h3>Print</h3></div>
               </div>
               <div className="card" onClick={() => setActiveItem('Float')}>
