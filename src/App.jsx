@@ -330,7 +330,7 @@ function App() {
         {!activeCollection ? (
           <div className="grid">
             <div className="card" onClick={() => setActiveCollection('Architecture')}>
-              <div className="card-image" style={{backgroundImage: "url('/assets/maze.png')"}}></div>
+              <div className="card-image" style={{backgroundImage: "url('/assets/maze.jpg')"}}></div>
               <div className="card-overlay"><h3>Architecture</h3></div>
             </div>
             <div className="card" onClick={() => setActiveCollection('Furniture')}>
