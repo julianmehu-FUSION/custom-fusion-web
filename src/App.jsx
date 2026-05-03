@@ -16,9 +16,9 @@ function AnimatedWord({ text, baseDelay, isAccent }) {
                           style={{ animationDelay: `${baseDelay + i * 0.04}s` }}
                         >
                 {char}
-            </span>span>
+            </span>
                         ))}
-              </span>span>
+              </span>
             );
 }
 
@@ -167,9 +167,9 @@ function ItemDetail({ itemName, onBack }) {
                         <div style={{ width: '100%', height: '80vh', position: 'relative', background: itemName === 'Auto Cabinet' ? '#ffffff' : '#0a0a0a' }}>
                                 <button onClick={() => setShow3D(false)} style={{ position: 'absolute', top: 20, right: 20, zIndex: 10, background: '#333', color: '#fff', border: 'none', padding: '8px 16px', cursor: 'pointer', borderRadius: 4 }}>
                                           Close Viewer
-                                </button>button>
+                                </button>
                             {itemName === 'Auto Cabinet' ? <AutoCabinet /> : <FingerprintChair />}
-                        </div>div>
+                        </div>
                       );
       }
     
@@ -181,16 +181,16 @@ function ItemDetail({ itemName, onBack }) {
                                 style={{ backgroundImage: `url('${detail.hero}')` }}
                               >
                             <div className="item-detail-hero-overlay">
-                                      <h2 className="item-detail-title">{itemName.toUpperCase()}</h2>h2>
-                            </div>div>
-                    </div>div>
+                                      <h2 className="item-detail-title">{itemName.toUpperCase()}</h2>
+                            </div>
+                    </div>
               
                   {/* Description + 3D toggle */}
-                    <p className="item-detail-desc">{detail.description}</p>p>
+                    <p className="item-detail-desc">{detail.description}</p>
                   {detail.has3D && (
                           <button onClick={() => setShow3D(true)} style={{ ...backBtnStyle, marginBottom: '2rem' }}>
                                     View 3D Model
-                          </button>button>
+                          </button>
                     )}
               
                   {/* Product variant grid */}
@@ -198,24 +198,24 @@ function ItemDetail({ itemName, onBack }) {
                           <div className="grid" style={{ marginBottom: '2rem' }}>
                               {detail.images.map((img, i) => (
                                           <div key={i} className="card variant-card">
-                                                        <div className="card-image" style={{ backgroundImage: `url('${img.src}')` }}></div>div>
+                                                        <div className="card-image" style={{ backgroundImage: `url('${img.src}')` }}></div>
                                                         <div className="card-overlay">
-                                                                        <h3>{img.label}</h3>h3>
-                                                        </div>div>
-                                          </div>div>
+                                                                        <h3>{img.label}</h3>
+                                                        </div>
+                                          </div>
                                         ))}
-                          </div>div>
+                          </div>
                     )}
               
                   {/* Extra gallery photos */}
                   {detail.gallery.length > 0 && (
                           <div className="photo-grid">
                               {detail.gallery.map((src, i) => (
-                                          <div key={i} className="photo-tile" style={{ backgroundImage: `url('${src}')` }}></div>div>
+                                          <div key={i} className="photo-tile" style={{ backgroundImage: `url('${src}')` }}></div>
                                         ))}
-                          </div>div>
+                          </div>
                     )}
-              </div>div>
+              </div>
             );
 }
 
@@ -242,14 +242,14 @@ function App() {
                     <nav className="navbar">
                             <div className="logo">
                                       <img src="/logo.png" alt="Custom Fusion Logo" style={{ width: '36px', marginRight: '12px' }} />
-                                      Custom&nbsp;<span>Fusion</span>span><span>
-                                      </span>span></div>div>
+                                      Custom&nbsp;<span>Fusion</span><span>
+                                      </span></div>
                             <ul className="nav-links">
-                                      <li><a href="#about">About</a>a></li>li>
-                                      <li><a href="#collections">Collections</a>a></li>li>
-                                      <li><a href="#contact">Contact</a>a></li>li>
-                            </ul>ul>
-                    </nav>nav>
+                                      <li><a href="#about">About</a></li>
+                                      <li><a href="#collections">Collections</a></li>
+                                      <li><a href="#contact">Contact</a></li>
+                            </ul>
+                    </nav>
               
                     <header className="hero">
                             <div className="hero-particles">
@@ -264,7 +264,7 @@ function App() {
                                             opacity: 0.1 + Math.random() * 0.3,
                             }} />
                             ))}
-                            </div>div>
+                            </div>
                             <div className="hero-content">
                                       <h1 className="hero-headline">
                                                   <AnimatedWord text="Precision" baseDelay={0.2} />
@@ -274,70 +274,70 @@ function App() {
                                                   <AnimatedWord text="Bespoke" baseDelay={1.2} />
                                           {' '}
                                                   <AnimatedWord text="Design." baseDelay={1.6} isAccent />
-                                      </h1>h1>
-                                      <p className="hero-tagline">A fusion of art, craft, and technology.</p>p>
-                                      <a href="#collections" className="cta-button">Explore Collections</a>a>
-                            </div>div>
+                                      </h1>
+                                      <p className="hero-tagline">A fusion of art, craft, and technology.</p>
+                                      <a href="#collections" className="cta-button">Explore Collections</a>
+                            </div>
                             <div className="hero-visual">
                                       <Canvas camera={{ position: [0, 0, 7], fov: 50 }}>
                                                   <OrbitControls enableZoom={false} enablePan={false} />
                                                   <DodecahedronLogo />
-                                      </Canvas>Canvas>
-                            </div>div>
-                    </header>header>
+                                      </Canvas>
+                            </div>
+                    </header>
               
                     <section id="about" className="about">
                             <div className="about-header">
-                                      <h2>About</h2>h2>
-                            </div>div>
+                                      <h2>About</h2>
+                            </div>
                             <div className="about-content">
                                       <div className="about-story">
                                                   <div className="about-block">
                                                                 <p className="about-lead">
                                                                                 Custom Fusion is a boutique design and product development studio specializing in bespoke furniture, sculptural objects, and architectural installations.
-                                                                </p>p>
-                                                  </div>div>
+                                                                </p>
+                                                  </div>
                                                   <div className="about-block">
                                                                 <p>
                                                                                 The studio's roots trace back to the workshops of New York City, where founder Julian Mehutanner began experimenting with the intersection of digital fabrication and artisan craft.
-                                                                </p>p>
-                                                  </div>div>
+                                                                </p>
+                                                  </div>
                                                   <div className="about-pullquote">
                                                                 <blockquote>
                                                                                 "Each creation is unique — guided by purpose and material honesty."
-                                                                </blockquote>blockquote>
-                                                  </div>div>
-                                      </div>div>
+                                                                </blockquote>
+                                                  </div>
+                                      </div>
                                       <div className="about-visuals">
                                                   <div className="about-grid">
-                                                                <div className="about-image" style={{ backgroundImage: "url('/assets/about-3dprint.png')" }}></div>div>
-                                                                <div className="about-image" style={{ backgroundImage: "url('/assets/about-cnc.png')" }}></div>div>
-                                                                <div className="about-image" style={{ backgroundImage: "url('/assets/about-resin.png')" }}></div>div>
-                                                                <div className="about-image" style={{ backgroundImage: "url('/assets/about-sculpture.png')" }}></div>div>
-                                                                <div className="about-image" style={{ backgroundImage: "url('/assets/about-texture.png')" }}></div>div>
-                                                                <div className="about-image" style={{ backgroundImage: "url('/assets/about-welding.png')" }}></div>div>
-                                                  </div>div>
-                                      </div>div>
-                            </div>div>
+                                                                <div className="about-image" style={{ backgroundImage: "url('/assets/about-3dprint.png')" }}></div>
+                                                                <div className="about-image" style={{ backgroundImage: "url('/assets/about-cnc.png')" }}></div>
+                                                                <div className="about-image" style={{ backgroundImage: "url('/assets/about-resin.png')" }}></div>
+                                                                <div className="about-image" style={{ backgroundImage: "url('/assets/about-sculpture.png')" }}></div>
+                                                                <div className="about-image" style={{ backgroundImage: "url('/assets/about-texture.png')" }}></div>
+                                                                <div className="about-image" style={{ backgroundImage: "url('/assets/about-welding.png')" }}></div>
+                                                  </div>
+                                      </div>
+                            </div>
                             <div className="about-stats">
                                       <div className="stat">
-                                                  <span className="stat-number">100+</span>span>
-                                                  <span className="stat-label">Bespoke Pieces</span>span>
-                                      </div>div>
+                                                  <span className="stat-number">100+</span>
+                                                  <span className="stat-label">Bespoke Pieces</span>
+                                      </div>
                                       <div className="stat">
-                                                  <span className="stat-number">12</span>span>
-                                                  <span className="stat-label">Materials Mastered</span>span>
-                                      </div>div>
+                                                  <span className="stat-number">12</span>
+                                                  <span className="stat-label">Materials Mastered</span>
+                                      </div>
                                       <div className="stat">
-                                                  <span className="stat-number">2018</span>span>
-                                                  <span className="stat-label">Studio Founded</span>span>
-                                      </div>div>
+                                                  <span className="stat-number">2018</span>
+                                                  <span className="stat-label">Studio Founded</span>
+                                      </div>
                                       <div className="stat">
-                                                  <span className="stat-number">NYC · SF · Paris</span>span>
-                                                  <span className="stat-label">Studio Locations</span>span>
-                                      </div>div>
-                            </div>div>
-                    </section>section>
+                                                  <span className="stat-number">NYC · SF · Paris</span>
+                                                  <span className="stat-label">Studio Locations</span>
+                                      </div>
+                            </div>
+                    </section>
               
                     <section id="collections" className="portfolio">
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem' }}>
@@ -347,30 +347,30 @@ function App() {
                                                             : activeCollection
                                                             ? `Collection / ${activeCollection}`
                                                             : 'Collections'}
-                                      </h2>h2>
+                                      </h2>
                                 {activeCollection && (
                             <button onClick={handleBack} style={backBtnStyle}>
                                         ← Back
-                            </button>button>
+                            </button>
                                       )}
-                            </div>div>
+                            </div>
                     
                         {/* — Top-level collection grid — */}
                         {!activeCollection ? (
                             <div className="grid">
                                         <div className="card" onClick={() => setActiveCollection('Architecture')}>
-                                                      <div className="card-image" style={{backgroundImage: "url('/assets/maze.jpg')"}}></div>div>
-                                                      <div className="card-overlay"><h3>Architecture</h3>h3></div>div>
-                                        </div>div>
+                                                      <div className="card-image" style={{backgroundImage: "url('/assets/maze.jpg')"}}></div>
+                                                      <div className="card-overlay"><h3>Architecture</h3></div>
+                                        </div>
                                         <div className="card" onClick={() => setActiveCollection('Furniture')}>
-                                                      <div className="card-image" style={{backgroundImage: "url('/assets/torus.jpg')"}}></div>div>
-                                                      <div className="card-overlay"><h3>Furniture</h3>h3></div>div>
-                                        </div>div>
+                                                      <div className="card-image" style={{backgroundImage: "url('/assets/torus.jpg')"}}></div>
+                                                      <div className="card-overlay"><h3>Furniture</h3></div>
+                                        </div>
                                         <div className="card" onClick={() => setActiveCollection('Products')}>
-                                                      <div className="card-image" style={{backgroundImage: "url('/assets/products_cover.jpg')"}}></div>div>
-                                                      <div className="card-overlay"><h3>Products</h3>h3></div>div>
-                                        </div>div>
-                            </div>div>
+                                                      <div className="card-image" style={{backgroundImage: "url('/assets/products_cover.jpg')"}}></div>
+                                                      <div className="card-overlay"><h3>Products</h3></div>
+                                        </div>
+                            </div>
                           ) : null}
                     
                         {/* — Architecture — */}
@@ -380,10 +380,10 @@ function App() {
                                           ) : (
                                             <div className="grid">
                                                           <div className="card" onClick={() => setActiveItem('Dew Catcher')}>
-                                                                          <div className="card-image" style={{backgroundImage: "url('/assets/media__1775516703702.png')"}}></div>div>
-                                                                          <div className="card-overlay"><h3>Dew Catcher</h3>h3></div>div>
-                                                          </div>div>
-                                            </div>div>
+                                                                          <div className="card-image" style={{backgroundImage: "url('/assets/media__1775516703702.png')"}}></div>
+                                                                          <div className="card-overlay"><h3>Dew Catcher</h3></div>
+                                                          </div>
+                                            </div>
                                           )
                           ) : null}
                     
@@ -394,26 +394,26 @@ function App() {
                                           ) : (
                                             <div className="grid">
                                                           <div className="card" onClick={() => setActiveItem('Torus')}>
-                                                                          <div className="card-image" style={{backgroundImage: "url('/assets/torus.jpg')"}}></div>div>
-                                                                          <div className="card-overlay"><h3>Torus</h3>h3></div>div>
-                                                          </div>div>
+                                                                          <div className="card-image" style={{backgroundImage: "url('/assets/torus.jpg')"}}></div>
+                                                                          <div className="card-overlay"><h3>Torus</h3></div>
+                                                          </div>
                                                           <div className="card" onClick={() => setActiveItem('Print')}>
-                                                                          <div className="card-image" style={{backgroundImage: "url('/assets/fingerprint_chair_thumbnail.png')"}}></div>div>
-                                                                          <div className="card-overlay"><h3>Print</h3>h3></div>div>
-                                                          </div>div>
+                                                                          <div className="card-image" style={{backgroundImage: "url('/assets/fingerprint_chair_thumbnail.png')"}}></div>
+                                                                          <div className="card-overlay"><h3>Print</h3></div>
+                                                          </div>
                                                           <div className="card" onClick={() => setActiveItem('Float')}>
-                                                                          <div className="card-image" style={{backgroundImage: "url('/assets/float.jpg')"}}></div>div>
-                                                                          <div className="card-overlay"><h3>Float</h3>h3></div>div>
-                                                          </div>div>
+                                                                          <div className="card-image" style={{backgroundImage: "url('/assets/float.jpg')"}}></div>
+                                                                          <div className="card-overlay"><h3>Float</h3></div>
+                                                          </div>
                                                           <div className="card" onClick={() => setActiveItem('Maze')}>
-                                                                          <div className="card-image" style={{backgroundImage: "url('/assets/maze.jpg')"}}></div>div>
-                                                                              <div className="card-overlay"><h3>Maze</h3>h3></div>div>
-                                                          </div>div>
+                                                                          <div className="card-image" style={{backgroundImage: "url('/assets/maze.jpg')"}}></div>
+                                                                              <div className="card-overlay"><h3>Maze</h3></div>
+                                                          </div>
                                                           <div className="card" onClick={() => setActiveItem('Line')}>
-                                                                          <div className="card-image" style={{backgroundImage: "url('/assets/print.jpg')"}}></div>div>
-                                                                          <div className="card-overlay"><h3>Line</h3>h3></div>div>
-                                                          </div>div>
-                                            </div>div>
+                                                                          <div className="card-image" style={{backgroundImage: "url('/assets/print.jpg')"}}></div>
+                                                                          <div className="card-overlay"><h3>Line</h3></div>
+                                                          </div>
+                                            </div>
                                           )
                           ) : null}
                     
@@ -424,38 +424,38 @@ function App() {
                                           ) : (
                                             <div className="grid">
                                                           <div className="card" onClick={() => setActiveItem('Auto Cabinet')}>
-                                                                          <div className="card-image" style={{backgroundImage: "url('/assets/autocabinet_thumbnail.jpg')"}}></div>div>
-                                                                          <div className="card-overlay"><h3>Auto Cabinet</h3>h3></div>div>
-                                                          </div>div>
+                                                                          <div className="card-image" style={{backgroundImage: "url('/assets/autocabinet_thumbnail.jpg')"}}></div>
+                                                                          <div className="card-overlay"><h3>Auto Cabinet</h3></div>
+                                                          </div>
                                                           <div className="card" onClick={() => setActiveItem('Cyber Ashtray')}>
-                                                                          <div className="card-image" style={{backgroundImage: "url('/assets/products_cover.jpg')"}}></div>div>
-                                                                          <div className="card-overlay"><h3>Cyber Ashtray</h3>h3></div>div>
-                                                          </div>div>
-                                            </div>div>
+                                                                          <div className="card-image" style={{backgroundImage: "url('/assets/products_cover.jpg')"}}></div>
+                                                                          <div className="card-overlay"><h3>Cyber Ashtray</h3></div>
+                                                          </div>
+                                            </div>
                                           )
                           ) : null}
-                    </section>section>
+                    </section>
               
                     <section id="contact" className="contact">
                             <div className="contact-inner">
-                                      <h2>Contact</h2>h2>
+                                      <h2>Contact</h2>
                                       <p className="contact-lead">
                                                   Interested in a custom commission or collaboration? We'd love to hear about your project.
-                                      </p>p>
+                                      </p>
                                       <div className="contact-methods">
                                                   <div className="contact-method">
-                                                                <span className="contact-label">Email</span>span>
-                                                                <a href="mailto:studio@customfusion.co" className="contact-link">studio@customfusion.co</a>a>
-                                                  </div>div>
+                                                                <span className="contact-label">Email</span>
+                                                                <a href="mailto:studio@customfusion.co" className="contact-link">studio@customfusion.co</a>
+                                                  </div>
                                                   <div className="contact-method">
-                                          <span className="contact-label">Instagram</span>span>
-                                                                <a href="https://instagram.com/customfusion" className="contact-link" target="_blank" rel="noreferrer">@customfusion</a>a>
-                                                  </div>div>
-                                      </div>div>
-                            </div>div>
-                    </section>section>
-              </div>div>
+                                          <span className="contact-label">Instagram</span>
+                                                                <a href="https://instagram.com/customfusion" className="contact-link" target="_blank" rel="noreferrer">@customfusion</a>
+                                                  </div>
+                                      </div>
+                            </div>
+                    </section>
+              </div>
             );
 }
 
-export default App;</span>
+export default App;
