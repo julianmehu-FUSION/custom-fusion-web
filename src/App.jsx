@@ -1,10 +1,57 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import DodecahedronLogo from './DodecahedronLogo';
-import AutoCabinet from './AutoCabinet';
-import FingerprintChair from './FingerprintChair';
 import './App.css';
+
+const IMAGES = [
+  '/assets/selects/08e1b90c-a291-4194-b11b-509ea72d0c4a_render.jpg',
+  '/assets/selects/FINGERPRINT_COL_STAGED.60_render.jpg',
+  '/assets/selects/HANGING_TORUS_CHAIR_02_render.jpg',
+  '/assets/selects/FLOAT_B21-L2_01.3_render.jpg',
+  '/assets/selects/MAZE.png',
+  '/assets/selects/GEO_LAMP.10_render.jpg',
+  '/assets/selects/PHANTOM_V1_03_render.jpg',
+  '/assets/selects/FLOATING_BENCH_RED_LAQUER.6_render.jpg',
+  '/assets/selects/LINE.png',
+  '/assets/selects/BOTTLE_2 V3_render.jpg',
+  '/assets/selects/TORUS_render.jpg',
+  '/assets/selects/1_render.jpg',
+  '/assets/selects/FINGERPRINT_COL_STAGED.61_render.jpg',
+  '/assets/selects/HANGING_TORUS_CHAIR_03-0001_render.jpg',
+  '/assets/selects/FLOAT_B21-L2_01.51_render.jpg',
+  '/assets/selects/GEO_LAMP2_render.jpg',
+  '/assets/selects/BOTTLE_2 V4_render.jpg',
+  '/assets/selects/FLOAT_B21-L2_01.5_render.jpg',
+  '/assets/selects/3.10_render.jpg',
+  '/assets/selects/print-chair.png',
+  '/assets/selects/FLOAT_B21-L2_01.53_render.jpg',
+  '/assets/selects/LAMP SIDE TABLE.77_render.jpg',
+  '/assets/selects/b7526da5-c68b-4491-8d94-d2a6fa2bad0b_render.jpg',
+  '/assets/selects/LAMP SIDE TABLE.78 (1)_render.jpg',
+  '/assets/selects/41d7c740-6168-4053-9139-35673b18a79c_render.jpg',
+  '/assets/selects/WARKA TOWER V2.2 sm_render.jpg',
+  '/assets/selects/LAMP SIDE TABLE.78 (2)_render.jpg',
+  '/assets/selects/a82a2914-8bc6-4ccc-9ec5-92124913a46d_render.jpg',
+  '/assets/selects/4fffdea7-d231-4434-b68f-6d8a93f1b43f_render.jpg',
+  '/assets/selects/LAMP SIDE TABLE.79 (3)_render.jpg',
+  '/assets/selects/ac4af227-ac7f-4048-8f3e-0495bb23e633_render.jpg',
+  '/assets/selects/53e65cdb-9f84-4d5f-9347-04b05c00e8b2_render.jpg',
+  '/assets/selects/print-table.jpg',
+  '/assets/selects/b802ec5e-cc02-4f4d-b893-7cb45c8c40e7_render.jpg',
+  '/assets/selects/67c0e752-e0da-4c22-bce8-615f58090727_render.jpg',
+  '/assets/selects/blob_render.jpg',
+  '/assets/selects/df085e62-7ec5-4221-bff0-88ac8e282a4c_render.jpg',
+  '/assets/selects/93c708c5-dfdd-49a8-a0b3-b19130480b59_render.jpg',
+  '/assets/selects/e6cad814-7052-4e6b-b799-1dbdde6a5644_render.jpg',
+  '/assets/selects/97bb7159-4778-47a7-a4d4-f80fbbdaf1bc_render.jpg',
+  '/assets/selects/f072f327-27e2-417d-ab86-0498ba21bdd2_render.jpg',
+  '/assets/selects/IMG_6781_render.jpg',
+  '/assets/selects/IMG_6783_render.jpg',
+  '/assets/selects/Arch.jpg',
+  '/assets/selects/test_customfusion_2_render.jpg',
+  '/assets/selects/Gemini_Generated_Image_d1978fd1978fd197_render.jpg',
+];
 
 function AnimatedWord({ text, baseDelay, isAccent }) {
   return (
@@ -237,13 +284,27 @@ function ItemDetail({ itemName, onBack }) {
 
 function App() {
   const [loaded, setLoaded] = useState(false);
-  const [activeCollection, setActiveCollection] = useState(null);
-  const [activeItem, setActiveItem] = useState(null);
-  const [activeSubItem, setActiveSubItem] = useState(null);
+  const [lightbox, setLightbox] = useState(null); // index or null
+
+  const openLightbox = (i) => setLightbox(i);
+  const closeLightbox = () => setLightbox(null);
+  const prev = useCallback(() => setLightbox(i => (i - 1 + IMAGES.length) % IMAGES.length), []);
+  const next = useCallback(() => setLightbox(i => (i + 1) % IMAGES.length), []);
 
   useEffect(() => {
     document.fonts.ready.then(() => setLoaded(true));
   }, []);
+
+  useEffect(() => {
+    if (lightbox === null) return;
+    const handler = (e) => {
+      if (e.key === 'ArrowLeft') prev();
+      else if (e.key === 'ArrowRight') next();
+      else if (e.key === 'Escape') closeLightbox();
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [lightbox, prev, next]);
 
   return (
     <div className={`app-container ${loaded ? 'loaded' : ''}`}>
@@ -255,7 +316,7 @@ function App() {
         </div>
         <ul className="nav-links">
           <li><a href="#about">About</a></li>
-          <li><a href="#collections">Collections</a></li>
+          <li><a href="#work">Work</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
       </nav>
@@ -285,7 +346,7 @@ function App() {
             <AnimatedWord text="Design." baseDelay={1.6} isAccent />
           </h1>
           <p className="hero-tagline">A fusion of art, craft, and technology.</p>
-          <a href="#collections" className="cta-button">Explore Collections</a>
+          <a href="#work" className="cta-button">View Work</a>
         </div>
         <div className="hero-visual">
           <Canvas camera={{ position: [0, 0, 7], fov: 50 }}>
@@ -362,130 +423,31 @@ function App() {
         </div>
       </section>
 
-      <section id="collections" className="portfolio">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem' }}>
-          <h2>
-            {activeSubItem
-              ? `Collection / ${activeCollection} / ${activeItem} / ${activeSubItem}`
-              : activeItem
-              ? `Collection / ${activeCollection} / ${activeItem}`
-              : activeCollection
-              ? `Collection / ${activeCollection}`
-              : 'Collections'}
-          </h2>
-          {activeCollection && (
-            <button onClick={(e) => { e.preventDefault(); if (activeSubItem) setActiveSubItem(null); else if (activeItem) setActiveItem(null); else setActiveCollection(null); }} style={backBtnStyle}>
-              ← Back
-            </button>
-          )}
+      <section id="work" className="portfolio">
+        <h2 style={{ marginBottom: '3rem' }}>Work</h2>
+        <div className="masonry">
+          {IMAGES.map((src, i) => (
+            <div key={i} className="masonry-item" onClick={() => openLightbox(i)}>
+              <img src={src} alt="" loading="lazy" />
+            </div>
+          ))}
         </div>
-
-        {!activeCollection ? (
-          <div className="grid">
-            <div className="card" onClick={() => setActiveCollection('Architecture')}>
-              <div className="card-image" style={{backgroundImage: "url('/assets/maze.jpg')"}}></div>
-              <div className="card-overlay"><h3>Architecture</h3></div>
-            </div>
-            <div className="card" onClick={() => setActiveCollection('Furniture')}>
-              <div className="card-image" style={{backgroundImage: "url('/assets/torus.jpg')"}}></div>
-              <div className="card-overlay"><h3>Furniture</h3></div>
-            </div>
-            <div className="card" onClick={() => setActiveCollection('Products')}>
-              <div className="card-image" style={{backgroundImage: "url('/assets/products_cover.jpg')"}}></div>
-              <div className="card-overlay"><h3>Products</h3></div>
-            </div>
-          </div>
-        ) : null}
-
-        {activeCollection === 'Architecture' ? (
-          activeItem ? (
-            <ItemDetail itemName={activeItem} onBack={() => setActiveItem(null)} />
-          ) : (
-            <div className="grid">
-              <div className="card" onClick={() => setActiveItem('Dew Catcher')}>
-                <div className="card-image" style={{backgroundImage: "url('/assets/media__1775516703702.png')"}}></div>
-                <div className="card-overlay"><h3>Dew Catcher</h3></div>
-              </div>
-            </div>
-          )
-        ) : null}
-
-        {activeCollection === 'Furniture' ? (
-          activeSubItem ? (
-            <ItemDetail itemName={activeSubItem} onBack={() => setActiveSubItem(null)} />
-          ) : activeItem === 'Torus' ? (
-            <div className="grid">
-              <div className="card">
-                <div className="card-image" style={{backgroundImage: "url('/assets/torus_canopy_01.jpg')"}}></div>
-                <div className="card-overlay"><h3>Canopy</h3></div>
-              </div>
-              <div className="card">
-                <div className="card-image" style={{backgroundImage: "url('/assets/torus.jpg')"}}></div>
-                <div className="card-overlay"><h3>Swing</h3></div>
-              </div>
-              <div className="card">
-                <div className="card-image" style={{backgroundImage: "url('/assets/torus_lounge_01.png')"}}></div>
-                <div className="card-overlay"><h3>Lounge</h3></div>
-              </div>
-              <div className="card">
-                <div className="card-image" style={{backgroundImage: "url('/assets/torus_recliner_01.jpg')"}}></div>
-                <div className="card-overlay"><h3>Recliner</h3></div>
-              </div>
-              <div className="card">
-                <div className="card-image" style={{backgroundImage: "url('/assets/torus_footrest_01.jpg')"}}></div>
-                <div className="card-overlay"><h3>Foot Rest</h3></div>
-              </div>
-            </div>
-          ) : activeItem ? (
-            <ItemDetail itemName={activeItem} onBack={() => setActiveItem(null)} />
-          ) : (
-            <div className="grid">
-              <div className="card" onClick={() => setActiveItem('Torus')}>
-                <div className="card-image" style={{backgroundImage: "url('/assets/torus.jpg')"}}></div>
-                <div className="card-overlay"><h3>Torus</h3></div>
-              </div>
-              <div className="card" onClick={() => setActiveItem('Print')}>
-                <div className="card-image" style={{backgroundImage: "url('/assets/print_collection.jpg')"}}></div>
-                <div className="card-overlay"><h3>Print</h3></div>
-              </div>
-              <div className="card" onClick={() => setActiveItem('Float')}>
-                <div className="card-image" style={{backgroundImage: "url('/assets/float.jpg')"}}></div>
-                <div className="card-overlay"><h3>Float</h3></div>
-              </div>
-              <div className="card" onClick={() => setActiveItem('Maze')}>
-                <div className="card-image" style={{backgroundImage: "url('/assets/maze.png')"}}></div>
-                <div className="card-overlay"><h3>Maze</h3></div>
-              </div>
-              <div className="card" onClick={() => setActiveItem('Line')}>
-                <div className="card-image" style={{backgroundImage: "url('/assets/line.png')"}}></div>
-                <div className="card-overlay"><h3>Line</h3></div>
-              </div>
-            </div>
-          )
-        ) : null}
-
-        {activeCollection === 'Products' ? (
-          activeItem === 'Auto Cabinet' ? (
-            <div style={{ width: '100%', height: '80vh', position: 'relative', background: '#ffffff' }}>
-              <button onClick={() => setActiveItem(null)} style={{ position: 'absolute', top: 20, right: 20, zIndex: 10, background: '#ffffff', border: '1px solid #bba', color: '#333', padding: '0.5rem 1rem', cursor: 'pointer', borderRadius: '4px', textTransform: 'uppercase', fontFamily: 'var(--font-display)' }}>
-                Close Viewer
-              </button>
-              <AutoCabinet />
-            </div>
-          ) : (
-            <div className="grid">
-              <div className="card" onClick={() => setActiveItem('Auto Cabinet')}>
-                <div className="card-image" style={{backgroundImage: "url('/assets/autocabinet_thumbnail.jpg')"}}></div>
-                <div className="card-overlay"><h3>Auto Cabinet</h3></div>
-              </div>
-              <div className="card">
-                <div className="card-image" style={{backgroundImage: "url('/assets/products_cover.jpg')"}}></div>
-                <div className="card-overlay"><h3>Cyber Ashtray</h3></div>
-              </div>
-            </div>
-          )
-        ) : null}
       </section>
+
+      {lightbox !== null && (
+        <div className="lightbox" onClick={closeLightbox}>
+          <button className="lightbox-close" onClick={closeLightbox}>✕</button>
+          <button className="lightbox-prev" onClick={(e) => { e.stopPropagation(); prev(); }}>‹</button>
+          <img
+            src={IMAGES[lightbox]}
+            alt=""
+            className="lightbox-img"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button className="lightbox-next" onClick={(e) => { e.stopPropagation(); next(); }}>›</button>
+          <span className="lightbox-counter">{lightbox + 1} / {IMAGES.length}</span>
+        </div>
+      )}
 
       <section id="contact" className="contact">
         <div className="contact-content">
