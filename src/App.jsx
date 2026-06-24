@@ -15,26 +15,18 @@ const IMAGES = [
   '/assets/selects/FLOATING_BENCH_RED_LAQUER.6_render.jpg',
   '/assets/selects/LINE.png',
   '/assets/selects/BOTTLE_2 V3_render.jpg',
-  '/assets/selects/TORUS_render.jpg',
   '/assets/selects/1_render.jpg',
   '/assets/selects/FINGERPRINT_COL_STAGED.61_render.jpg',
   '/assets/selects/HANGING_TORUS_CHAIR_03-0001_render.jpg',
   '/assets/selects/FLOAT_B21-L2_01.51_render.jpg',
   '/assets/selects/GEO_LAMP2_render.jpg',
-  '/assets/selects/BOTTLE_2 V4_render.jpg',
   '/assets/selects/FLOAT_B21-L2_01.5_render.jpg',
   '/assets/selects/3.10_render.jpg',
   '/assets/selects/print-chair.png',
-  '/assets/selects/FLOAT_B21-L2_01.53_render.jpg',
-  '/assets/selects/LAMP SIDE TABLE.77_render.jpg',
   '/assets/selects/b7526da5-c68b-4491-8d94-d2a6fa2bad0b_render.jpg',
   '/assets/selects/LAMP SIDE TABLE.78 (1)_render.jpg',
-  '/assets/selects/41d7c740-6168-4053-9139-35673b18a79c_render.jpg',
-  '/assets/selects/WARKA TOWER V2.2 sm_render.jpg',
   '/assets/selects/LAMP SIDE TABLE.78 (2)_render.jpg',
-  '/assets/selects/a82a2914-8bc6-4ccc-9ec5-92124913a46d_render.jpg',
   '/assets/selects/4fffdea7-d231-4434-b68f-6d8a93f1b43f_render.jpg',
-  '/assets/selects/LAMP SIDE TABLE.79 (3)_render.jpg',
   '/assets/selects/ac4af227-ac7f-4048-8f3e-0495bb23e633_render.jpg',
   '/assets/selects/53e65cdb-9f84-4d5f-9347-04b05c00e8b2_render.jpg',
   '/assets/selects/print-table.jpg',
@@ -44,7 +36,6 @@ const IMAGES = [
   '/assets/selects/df085e62-7ec5-4221-bff0-88ac8e282a4c_render.jpg',
   '/assets/selects/93c708c5-dfdd-49a8-a0b3-b19130480b59_render.jpg',
   '/assets/selects/e6cad814-7052-4e6b-b799-1dbdde6a5644_render.jpg',
-  '/assets/selects/97bb7159-4778-47a7-a4d4-f80fbbdaf1bc_render.jpg',
   '/assets/selects/f072f327-27e2-417d-ab86-0498ba21bdd2_render.jpg',
   '/assets/selects/IMG_6781_render.jpg',
   '/assets/selects/IMG_6783_render.jpg',
@@ -371,7 +362,7 @@ function App() {
 
             <div className="about-block">
               <p>
-                The studio's roots trace back to the workshops of New York City, where founder Julian Mehu first apprenticed under sculptor <span className="accent">Jason Young</span> — learning to think in materials, push beyond convention, and treat every surface as an opportunity for expression. That foundation in art and material experimentation continues to define the studio's approach.
+                The studio's roots trace back to the workshops of New York City, where founder <span className="accent">Julian Mehu</span> first apprenticed under sculptor Jason Young — learning to think in materials, push beyond convention, and treat every surface as an opportunity for expression. That foundation in art and material experimentation continues to define the studio's approach.
               </p>
             </div>
 
