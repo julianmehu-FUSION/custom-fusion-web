@@ -79,7 +79,7 @@ const APPS = [
     detail: 'Supports NeoPixels, ELK-BLEDOM, Triones and more.',
   },
   {
-    name: 'WhisperBar',
+    name: 'Murmur',
     tagline: 'Talk. Done.',
     description: 'One tap in your menu bar to dictate into any app. Claude Code, Slack, email — anything. Transcribed locally by Whisper. Nothing leaves your machine.',
     status: 'Coming Soon',
