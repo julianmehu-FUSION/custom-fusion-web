@@ -16,55 +16,45 @@ function AnimatedWord({ text, baseDelay, isAccent }) {
   );
 }
 
-// ── Scrolling artwork marquee ─────────────────────────────────────────────────
-const MARQUEE_IMAGES = [
-  '/assets/selects/FINGERPRINT_COL_STAGED.60_render.jpg',
-  '/assets/selects/HANGING_TORUS_CHAIR_02_render.jpg',
-  '/assets/selects/FLOAT_B21-L2_01.3_render.jpg',
-  '/assets/selects/FLOATING_BENCH_RED_LAQUER.6_render.jpg',
-  '/assets/selects/GEO_LAMP.10_render.jpg',
-  '/assets/selects/PHANTOM_V1_03_render.jpg',
-  '/assets/selects/Arch.jpg',
-  '/assets/selects/FINGERPRINT_COL_STAGED.61_render.jpg',
-  '/assets/selects/FLOAT_B21-L2_01.51_render.jpg',
-  '/assets/selects/GEO_LAMP2_render.jpg',
-  '/assets/torus_canopy_01.jpg',
-  '/assets/torus_lounge_01.png',
-  '/assets/autocabinet_thumbnail.jpg',
-  '/assets/products.jpg',
-];
-
-function MarqueeGallery() {
-  const doubled = [...MARQUEE_IMAGES, ...MARQUEE_IMAGES];
-  return (
-    <div className="marquee-section">
-      <div className="marquee-label">Designed with AI — Keyshot · Rhino · Blender</div>
-      <div className="marquee-outer">
-        <div className="marquee-track">
-          {doubled.map((src, i) => (
-            <div key={i} className="marquee-item">
-              <img src={src} alt="" loading="lazy" />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ── App cards ─────────────────────────────────────────────────────────────────
 const APPS = [
   {
-    name: 'ClaudeWatch',
-    tagline: 'Claude on your wrist.',
-    description: 'Speak a question on your Apple Watch. Hear the answer through your AirPods. Claude AI — hands-free, always on. Built because the future shouldn\'t require a keyboard.',
-    status: 'TestFlight',
+    name: 'AirReply',
+    tagline: 'Talk. Done.',
+    description: 'One click in your menu bar to dictate into any app — chat, email, notes, AI assistants. Your words appear live as you speak, then land wherever your cursor is.',
+    status: 'Free Download',
     statusType: 'available',
+    platform: 'macOS 26',
+    accent: '#00c2ff',
+    bg: 'linear-gradient(135deg, #001520 0%, #002535 60%, #111 100%)',
+    iconImg: '/apps/airreply.png',
+    detail: 'Uses Apple speech recognition. Optional spoken replies keep the conversation hands-free.',
+    href: '/airreply/',
+    cta: 'Download free →',
+  },
+  {
+    name: 'Falconer',
+    tagline: 'Your AI agents, one cockpit.',
+    description: 'Run, track and steer your AI agents and projects from one place — on your Mac, iPhone and Apple Watch.',
+    status: 'Coming Soon',
+    statusType: 'soon',
+    platform: 'macOS · iPhone · Apple Watch',
+    accent: '#3fb6d9',
+    bg: 'linear-gradient(135deg, #00101f 0%, #0b2340 60%, #111 100%)',
+    iconImg: '/apps/falconer.png',
+    detail: 'Hand off work at the end of the day; pick up where your agents left off.',
+  },
+  {
+    name: 'Watch Assist AI',
+    tagline: 'AI on your wrist.',
+    description: 'Speak a question on your Apple Watch. Hear the answer through your AirPods. Hands-free, wherever you are.',
+    status: 'Coming Soon',
+    statusType: 'soon',
     platform: 'Apple Watch · iPhone',
     accent: '#ff6a00',
     bg: 'linear-gradient(135deg, #1a0f00 0%, #2a1500 60%, #111 100%)',
     icon: '⌚',
-    detail: 'Voice → Claude → spoken reply via AirPods. Works anywhere your watch goes.',
+    detail: 'Voice in, spoken answer out. Works anywhere your watch goes.',
   },
   {
     name: 'Neopix',
@@ -77,18 +67,6 @@ const APPS = [
     bg: 'linear-gradient(135deg, #0d0020 0%, #1a0035 60%, #111 100%)',
     icon: '💡',
     detail: 'Supports NeoPixels, ELK-BLEDOM, Triones and more.',
-  },
-  {
-    name: 'Murmur',
-    tagline: 'Talk. Done.',
-    description: 'One tap in your menu bar to dictate into any app. Claude Code, Slack, email — anything. Transcribed locally by Whisper. Nothing leaves your machine.',
-    status: 'Coming Soon',
-    statusType: 'soon',
-    platform: 'macOS',
-    accent: '#00c2ff',
-    bg: 'linear-gradient(135deg, #001520 0%, #002535 60%, #111 100%)',
-    icon: '🎙',
-    detail: 'Born from frustration. Claude Code blocked the dictation shortcut. We fixed that.',
   },
 ];
 
@@ -168,9 +146,6 @@ function App() {
         </div>
       </header>
 
-      {/* ── Scrolling artwork marquee ── */}
-      <MarqueeGallery />
-
       {/* ── Mission ── */}
       <section className="mission">
         <div className="mission-inner">
@@ -183,7 +158,7 @@ function App() {
             Custom Fusion builds AI-powered tools across every working environment — music, design, engineering, development. We don't chase trends. We find the places where talented people are still doing work that machines should be handling, and we fix that.
           </p>
           <div className="mission-stats">
-            <div className="mstat"><span className="mstat-num">3</span><span className="mstat-label">Apps in Development</span></div>
+            <div className="mstat"><span className="mstat-num">4</span><span className="mstat-label">Apps</span></div>
             <div className="mstat"><span className="mstat-num">6+</span><span className="mstat-label">Professional Tools Integrated</span></div>
             <div className="mstat"><span className="mstat-num">1</span><span className="mstat-label">AI at the Core</span></div>
           </div>
@@ -201,7 +176,9 @@ function App() {
             <div key={app.name} className="app-card" style={{ background: app.bg }}>
               <div className="app-card-glow" style={{ background: app.accent }} />
               <div className="app-card-top">
-                <div className="app-icon-large">{app.icon}</div>
+                <div className="app-icon-large">
+                  {app.iconImg ? <img src={app.iconImg} alt={`${app.name} icon`} className="app-icon-img" /> : app.icon}
+                </div>
                 <span className={`app-status ${app.statusType}`} style={app.statusType === 'available' ? { borderColor: app.accent, color: app.accent } : {}}>
                   {app.status}
                 </span>
@@ -210,6 +187,9 @@ function App() {
               <p className="app-tagline" style={{ color: app.accent }}>{app.tagline}</p>
               <p className="app-description">{app.description}</p>
               <div className="app-detail-line">{app.detail}</div>
+              {app.href && (
+                <a href={app.href} className="app-cta" style={{ background: app.accent }}>{app.cta}</a>
+              )}
               <div className="app-platform">{app.platform}</div>
             </div>
           ))}

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Shared by link only for now; keep it out of search results. -->
+  <meta name="robots" content="noindex">
+  <title>AirReply — Custom Fusion</title>
+  <meta name="description" content="Talk instead of type. AirReply turns your voice into text in any app on your Mac.">
+  <link rel="icon" href="/airreply/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050505;
+      --surface: #111;
+      --border: #222;
+      --accent: #ff6a00;
+      --text: #fff;
+      --muted: #a0a0a0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Inter", sans-serif;
+      line-height: 1.6;
+    }
+    main { max-width: 720px; margin: 0 auto; padding: 64px 16px 48px; }
+    .hero { text-align: center; }
+    .hero img { width: 128px; height: 128px; border-radius: 28px; }
+    h1 {
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(2rem, 7vw, 3rem);
+      letter-spacing: 0.04em;
+      margin: 20px 0 8px;
+    }
+    .tagline { color: var(--muted); font-size: 1.15rem; margin: 0 0 32px; }
+    .download {
+      display: inline-block;
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 14px 32px;
+      border-radius: 999px;
+      font-size: 1.05rem;
+    }
+    .download:hover { filter: brightness(1.1); }
+    .fine { color: var(--muted); font-size: 0.9rem; margin-top: 12px; }
+    section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-top: 32px;
+    }
+    h2 {
+      font-family: "Orbitron", sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 12px;
+    }
+    ol, ul { margin: 0; padding-left: 1.25rem; }
+    li { margin: 6px 0; }
+    li strong { color: var(--text); }
+    p { margin: 0 0 10px; }
+    .muted { color: var(--muted); }
+    footer { text-align: center; color: var(--muted); font-size: 0.9rem; margin-top: 40px; }
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="hero">
+      <img src="/airreply/icon.png" alt="AirReply icon">
+      <h1>AirReply</h1>
+      <p class="tagline">Talk instead of type. Your words land in whatever app you're using.</p>
+      <a class="download" href="/airreply/AirReply.dmg" download>Download for Mac</a>
+      <p class="fine">Free · Version 1.1.0 · Requires macOS 26 or later</p>
+    </div>
+
+    <section>
+      <h2>What it does</h2>
+      <ul>
+        <li>Click the mic in the menu bar or the floating pill, speak, click again. Your words are pasted where your cursor is.</li>
+        <li>See your words appear live while you talk. Press Esc to throw them away.</li>
+        <li>Works in any app: chat, email, notes, AI assistants.</li>
+        <li>Optionally reads replies aloud, so you can keep the conversation going by voice.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Install</h2>
+      <ol>
+        <li>Open the downloaded <strong>AirReply.dmg</strong> and drag the app into Applications.</li>
+        <li>Open it from Applications. A mic icon appears in the menu bar.</li>
+        <li>Allow what it asks for: <strong>Microphone</strong> (to hear you), <strong>Speech Recognition</strong> (to type exactly what you said) and <strong>Accessibility</strong> (to paste into your app).</li>
+        <li>Right-click the menu-bar icon for Settings and Setup &amp; Permissions.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Privacy</h2>
+      <p class="muted">Live words are recognized on your Mac. The final text comes from Apple's speech recognition, the same service Siri and Apple dictation use, so your audio is sent to Apple for that step. Nothing is sent to Custom Fusion.</p>
+    </section>
+
+    <footer>
+      Questions? <a href="mailto:studio@customfusion.co">studio@customfusion.co</a> · <a href="/">customfusion.co</a>
+    </footer>
+  </main>
+</body>
+</html>
