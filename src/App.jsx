@@ -248,7 +248,7 @@ function App() {
           <p className="contact-description">
             Got a workflow still living in 2015? A tool you wish could think for itself? An idea that doesn't fit anywhere yet? That's exactly where we work.
           </p>
-          <a href="mailto:studio@customfusion.co" className="contact-email">studio@customfusion.co</a>
+          <a href="mailto:julian@customfusion.co" className="contact-email">julian@customfusion.co</a>
           <div className="contact-locations">
             <span>New York</span>
             <span className="contact-divider">·</span>
