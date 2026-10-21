@@ -33,6 +33,30 @@ const APPS = [
     cta: 'Download free →',
   },
   {
+    name: 'SolidCraft',
+    tagline: 'CAD you build with AI.',
+    description: 'Parametric CAD for Mac: parts, assemblies, drawings and design checks, with a Copilot and an agent interface that design alongside you.',
+    status: 'Coming Soon',
+    statusType: 'soon',
+    platform: 'macOS 14+',
+    accent: '#ff5514',
+    bg: 'linear-gradient(135deg, #200800 0%, #351000 60%, #111 100%)',
+    iconImg: '/apps/solidcraft.png',
+    detail: 'OpenCASCADE kernel. Imports STEP, STL and Rhino; exports STEP, STL, PDF, SVG and DXF.',
+  },
+  {
+    name: 'SculptCraft',
+    tagline: 'Sculpt for the CNC.',
+    description: 'Sculpt reliefs, molds and bucks by hand or with AI, then check tool reach and export tiles ready to cut.',
+    status: 'Coming Soon',
+    statusType: 'soon',
+    platform: 'macOS 14+',
+    accent: '#e1d7c3',
+    bg: 'linear-gradient(135deg, #1a150d 0%, #2a2216 60%, #111 100%)',
+    iconImg: '/apps/sculptcraft.png',
+    detail: 'Every stroke is a replayable step. Exports STL, OBJ, heightmaps and rib patterns.',
+  },
+  {
     name: 'Falconer',
     tagline: 'Your AI agents, one cockpit.',
     description: 'Run, track and steer your AI agents and projects from one place — on your Mac, iPhone and Apple Watch.',
@@ -158,7 +182,7 @@ function App() {
             Custom Fusion builds AI-powered tools across every working environment — music, design, engineering, development. We don't chase trends. We find the places where talented people are still doing work that machines should be handling, and we fix that.
           </p>
           <div className="mission-stats">
-            <div className="mstat"><span className="mstat-num">4</span><span className="mstat-label">Apps</span></div>
+            <div className="mstat"><span className="mstat-num">6</span><span className="mstat-label">Apps</span></div>
             <div className="mstat"><span className="mstat-num">6+</span><span className="mstat-label">Professional Tools Integrated</span></div>
             <div className="mstat"><span className="mstat-num">1</span><span className="mstat-label">AI at the Core</span></div>
           </div>
