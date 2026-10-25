@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Shared by link only for now; keep it out of search results. -->
+  <meta name="robots" content="noindex">
+  <title>AirReply Privacy — Custom Fusion</title>
+  <meta name="description" content="How AirReply for Mac, iPhone and Apple Watch handles your voice and text.">
+  <link rel="icon" href="/airreply/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050505;
+      --surface: #111;
+      --border: #222;
+      --accent: #ff6a00;
+      --text: #fff;
+      --muted: #a0a0a0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Inter", sans-serif;
+      line-height: 1.6;
+    }
+    main { max-width: 720px; margin: 0 auto; padding: 64px 16px 48px; }
+    .hero { text-align: center; }
+    .hero img { width: 128px; height: 128px; border-radius: 28px; }
+    h1 {
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(2rem, 7vw, 3rem);
+      letter-spacing: 0.04em;
+      margin: 20px 0 8px;
+    }
+    .tagline { color: var(--muted); font-size: 1.15rem; margin: 0 0 32px; }
+    .download {
+      display: inline-block;
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 14px 32px;
+      border-radius: 999px;
+      font-size: 1.05rem;
+    }
+    .download:hover { filter: brightness(1.1); }
+    .fine { color: var(--muted); font-size: 0.9rem; margin-top: 12px; }
+    section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-top: 32px;
+    }
+    h2 {
+      font-family: "Orbitron", sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 12px;
+    }
+    ol, ul { margin: 0; padding-left: 1.25rem; }
+    li { margin: 6px 0; }
+    li strong { color: var(--text); }
+    p { margin: 0 0 10px; }
+    .muted { color: var(--muted); }
+    footer { text-align: center; color: var(--muted); font-size: 0.9rem; margin-top: 40px; }
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="hero">
+      <img src="/airreply/icon.png" alt="AirReply icon">
+      <h1>Privacy</h1>
+      <p class="tagline">AirReply for Mac, iPhone and Apple Watch · Updated October 25, 2026</p>
+    </div>
+
+    <section>
+      <h2>The short version</h2>
+      <p>AirReply has no accounts, no analytics, no ads and no servers of ours. Custom Fusion never receives your voice, your words or anything about you.</p>
+    </section>
+
+    <section>
+      <h2>Your voice</h2>
+      <ul>
+        <li><strong>On Mac</strong>, live words are recognized on the Mac. The final text comes from Apple's speech recognition, the same service Siri and Apple dictation use, so your audio is sent to Apple for that step.</li>
+        <li><strong>On iPhone</strong>, AirReply uses Apple's speech recognition, which may send your audio to Apple to turn it into text.</li>
+        <li><strong>On Apple Watch</strong>, the Watch sends only commands (start, stop, cancel). Your Mac records through its own microphone.</li>
+      </ul>
+      <p class="muted" style="margin-top:10px">Apple handles that audio under its own privacy policy. AirReply does not keep recordings.</p>
+    </section>
+
+    <section>
+      <h2>Your words</h2>
+      <p>The text you dictate on iPhone or Apple Watch travels over your own Wi-Fi network straight to AirReply on your Mac, which types it into the app you're using. It does not pass through the internet or any Custom Fusion service, and AirReply does not store it.</p>
+    </section>
+
+    <section>
+      <h2>Permissions</h2>
+      <ul>
+        <li><strong>Microphone</strong>, to hear you.</li>
+        <li><strong>Speech Recognition</strong>, to turn your voice into text.</li>
+        <li><strong>Local Network</strong> (iPhone), to find your Mac and send it your words.</li>
+        <li><strong>Accessibility</strong> (Mac), to paste the text where your cursor is.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Updates and contact</h2>
+      <p>The Mac app checks this website once a day for a newer version. That request carries no information about you.</p>
+      <p>Questions about privacy: <a href="mailto:julian@customfusion.co" style="color:var(--accent)">julian@customfusion.co</a></p>
+    </section>
+
+    <footer>
+      <a href="/airreply/">AirReply</a> · <a href="/">customfusion.co</a>
+    </footer>
+  </main>
+</body>
+</html>
