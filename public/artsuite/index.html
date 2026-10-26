@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Shared by link and code only; keep it out of search results. -->
+  <meta name="robots" content="noindex">
+  <title>ArtSuite — Custom Fusion</title>
+  <meta name="description" content="ArtSuite installs and updates SolidArt, SculptArt and RenderArt on your Mac.">
+  <link rel="icon" href="/artsuite/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #050505; --surface: #111; --border: #222; --accent: #ff6a00; --text: #fff; --muted: #a0a0a0; --bad: #ff5a5a; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: "Inter", sans-serif; line-height: 1.6; }
+    main { max-width: 720px; margin: 0 auto; padding: 64px 16px 48px; }
+    .hero { text-align: center; }
+    .hero img { width: 128px; height: 128px; border-radius: 28px; }
+    h1 { font-family: "Orbitron", sans-serif; font-size: clamp(2rem, 7vw, 3rem); letter-spacing: 0.04em; margin: 20px 0 8px; }
+    .tagline { color: var(--muted); font-size: 1.15rem; margin: 0 0 32px; }
+    form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    input {
+      background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 999px;
+      padding: 14px 22px; font: inherit; font-size: 1.05rem; width: min(260px, 100%); text-align: center;
+    }
+    input:focus { outline: none; border-color: var(--accent); }
+    button {
+      background: var(--accent); color: #000; font: inherit; font-weight: 600; border: 0; cursor: pointer;
+      padding: 14px 32px; border-radius: 999px; font-size: 1.05rem;
+    }
+    button:hover { filter: brightness(1.1); }
+    .wrong { color: var(--bad); margin: 14px 0 0; display: none; }
+    .fine { color: var(--muted); font-size: 0.9rem; margin-top: 12px; }
+    section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-top: 32px; }
+    h2 { font-family: "Orbitron", sans-serif; font-size: 1rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 12px; }
+    ol, ul { margin: 0; padding-left: 1.25rem; }
+    li { margin: 6px 0; }
+    li strong { color: var(--text); }
+    footer { text-align: center; color: var(--muted); font-size: 0.9rem; margin-top: 40px; }
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="hero">
+      <img src="/artsuite/icon.png" alt="ArtSuite icon">
+      <h1>ArtSuite</h1>
+      <p class="tagline">One app that installs and keeps SolidArt, SculptArt and RenderArt up to date.</p>
+      <!-- The code is checked on the server (api/artsuite.js); the right code downloads the installer. -->
+      <form method="post" action="/api/artsuite">
+        <input name="code" type="password" placeholder="Download code" autocomplete="off" autocapitalize="off" required aria-label="Download code">
+        <button type="submit">Download for Mac</button>
+      </form>
+      <p class="wrong" id="wrong">That code didn't work. Check it and try again.</p>
+      <p class="fine">By invitation · Requires macOS 14 or later · Built for Intel Macs, runs on Apple silicon with Rosetta</p>
+    </div>
+
+    <section>
+      <h2>Install</h2>
+      <ol>
+        <li>Open the downloaded <strong>ArtSuite</strong> disk image and drag <strong>ArtSuite</strong> into Applications.</li>
+        <li>Open ArtSuite. Press <strong>Install</strong> on SolidArt, SculptArt or RenderArt.</li>
+        <li>On an Apple silicon Mac, allow macOS to install <strong>Rosetta</strong> the first time it asks.</li>
+        <li>ArtSuite checks for updates on its own. Each app also has <strong>Check for Updates…</strong> in its menu.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>The apps</h2>
+      <ul>
+        <li><strong>SolidArt</strong>: parametric CAD for parts and assemblies.</li>
+        <li><strong>SculptArt</strong>: sculpting for CNC reliefs, molds and bucks.</li>
+        <li><strong>RenderArt</strong>: photoreal renders, turntables and animations.</li>
+      </ul>
+    </section>
+
+    <footer>
+      Need a code? <a href="mailto:julian@customfusion.co">julian@customfusion.co</a> · <a href="/">customfusion.co</a>
+    </footer>
+  </main>
+  <script>if (new URLSearchParams(location.search).has("wrong")) document.getElementById("wrong").style.display = "block";</script>
+</body>
+</html>
