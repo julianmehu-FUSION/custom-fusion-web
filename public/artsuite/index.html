@@ -6,7 +6,7 @@
   <!-- Shared by link and code only; keep it out of search results. -->
   <meta name="robots" content="noindex">
   <title>ArtSuite — Custom Fusion</title>
-  <meta name="description" content="ArtSuite installs and updates SolidArt, SculptArt and RenderArt on your Mac.">
+  <meta name="description" content="ArtSuite installs and updates SolidArt, SculptArt and RenderArt on your Mac or PC.">
   <link rel="icon" href="/artsuite/icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,19 +51,29 @@
       <!-- The code is checked on the server (api/artsuite.js); the right code downloads the installer. -->
       <form method="post" action="/api/artsuite">
         <input name="code" type="password" placeholder="Download code" autocomplete="off" autocapitalize="off" required aria-label="Download code">
-        <button type="submit">Download for Mac</button>
+        <button type="submit" name="os" value="mac">Download for Mac</button>
+        <button type="submit" name="os" value="windows">Download for Windows</button>
       </form>
       <p class="wrong" id="wrong">That code didn't work. Check it and try again.</p>
-      <p class="fine">By invitation · Requires macOS 14 or later · Built for Intel Macs, runs on Apple silicon with Rosetta</p>
+      <p class="fine">By invitation · Mac: macOS 14 or later, Intel or Apple silicon (Rosetta) · Windows: Windows 10 or 11, 64-bit</p>
     </div>
 
     <section>
-      <h2>Install</h2>
+      <h2>Install on Mac</h2>
       <ol>
         <li>Open the downloaded <strong>ArtSuite</strong> disk image and drag <strong>ArtSuite</strong> into Applications.</li>
         <li>Open ArtSuite. Press <strong>Install</strong> on SolidArt, SculptArt or RenderArt.</li>
         <li>On an Apple silicon Mac, allow macOS to install <strong>Rosetta</strong> the first time it asks.</li>
         <li>ArtSuite checks for updates on its own. Each app also has <strong>Check for Updates…</strong> in its menu.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Install on Windows</h2>
+      <ol>
+        <li>Unzip the download and open <strong>ArtSuite.exe</strong>. It installs itself and adds ArtSuite to the Start menu.</li>
+        <li>If Windows says it protected your PC, click <strong>More info</strong>, then <strong>Run anyway</strong>.</li>
+        <li>Press <strong>Install</strong> on SolidArt, SculptArt or RenderArt. RenderArt needs an NVIDIA graphics card.</li>
       </ol>
     </section>
 
