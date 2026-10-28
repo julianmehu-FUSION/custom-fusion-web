@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
-import DodecahedronLogo from './DodecahedronLogo';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import './App.css';
+
+// The 3D logo loads after the text so the page shows up fast on phones.
+const HeroLogo = lazy(() => import('./HeroLogo'));
+
+const EMAIL = 'julian@customfusion.co';
+const ask = (app) => `mailto:${EMAIL}?subject=${encodeURIComponent(`${app} — early access`)}`;
 
 function AnimatedWord({ text, baseDelay, isAccent }) {
   return (
@@ -16,127 +19,138 @@ function AnimatedWord({ text, baseDelay, isAccent }) {
   );
 }
 
-// ── App cards ─────────────────────────────────────────────────────────────────
+// ── The six featured apps ──────────────────────────────────────────────────────
+// `shot` (a device-framed screenshot) replaces the big icon once it exists.
 const APPS = [
   {
-    name: 'AirReply',
-    tagline: 'Talk. Done.',
-    description: 'One click in your menu bar to dictate into any app — chat, email, notes, AI assistants. Your words appear live as you speak, then land wherever your cursor is.',
-    status: 'Free Download',
-    statusType: 'available',
-    platform: 'macOS 26',
-    accent: '#00c2ff',
-    bg: 'linear-gradient(135deg, #001520 0%, #002535 60%, #111 100%)',
-    iconImg: '/apps/airreply.png',
-    detail: 'Uses Apple speech recognition. Optional spoken replies keep the conversation hands-free.',
-    href: '/airreply/',
-    cta: 'Download free →',
-  },
-  {
-    name: 'ArtSuite',
-    tagline: 'One launcher. Every Art app.',
-    description: 'Installs and updates SolidArt, SculptArt and RenderArt on your Mac or PC, and keeps them current on its own.',
-    status: 'By Invitation',
-    statusType: 'available',
-    platform: 'macOS · Windows',
-    accent: '#ff5514',
-    bg: 'linear-gradient(135deg, #200800 0%, #2a1a10 60%, #111 100%)',
-    iconImg: '/artsuite/icon.png',
-    detail: 'Download it with your invitation code, then press Install on any app.',
-    href: '/artsuite/',
-    cta: 'Get ArtSuite →',
-  },
-  {
-    name: 'SolidArt',
-    tagline: 'CAD you build with AI.',
-    description: 'Parametric CAD for Mac and Windows: parts, assemblies, drawings and design checks, with a Copilot and an agent interface that design alongside you.',
-    status: 'In ArtSuite',
-    statusType: 'available',
-    platform: 'macOS · Windows',
-    accent: '#ff5514',
-    bg: 'linear-gradient(135deg, #200800 0%, #351000 60%, #111 100%)',
-    iconImg: '/apps/solidart.png',
-    detail: 'OpenCASCADE kernel. Imports STEP, STL and Rhino; exports STEP, STL, PDF, SVG and DXF.',
-    href: '/artsuite/',
-    cta: 'Get it with ArtSuite →',
-  },
-  {
-    name: 'SculptArt',
-    tagline: 'Sculpt for the CNC.',
-    description: 'Sculpt reliefs, molds and bucks by hand or with AI, then check tool reach and export tiles ready to cut.',
-    status: 'In ArtSuite',
-    statusType: 'available',
-    platform: 'macOS · Windows',
-    accent: '#e1d7c3',
-    bg: 'linear-gradient(135deg, #1a150d 0%, #2a2216 60%, #111 100%)',
-    iconImg: '/apps/sculptart.png',
-    detail: 'Every stroke is a replayable step. Exports STL, OBJ, heightmaps and rib patterns.',
-    href: '/artsuite/',
-    cta: 'Get it with ArtSuite →',
-  },
-  {
-    name: 'RenderArt',
-    tagline: 'Render what you design.',
-    description: 'Photoreal stills, turntables and animations of your parts and assemblies, lit with HDRIs on a GPU path tracer, set up by hand or by AI.',
-    status: 'In ArtSuite',
-    statusType: 'available',
-    platform: 'macOS · Windows',
-    accent: '#8ad7ff',
-    bg: 'linear-gradient(135deg, #061018 0%, #0c1f2e 60%, #111 100%)',
-    iconImg: '/apps/renderart.png',
-    detail: 'Reads USD, OBJ and STL. Exports PNG stills, image sequences and MP4 turntables.',
-    href: '/artsuite/',
-    cta: 'Get it with ArtSuite →',
-  },
-  {
+    id: 'falconer',
     name: 'Falconer',
     tagline: 'Your AI agents, one cockpit.',
-    description: 'Run, track and steer your AI agents and projects from one place — on your Mac, iPhone and Apple Watch.',
-    status: 'Coming Soon',
-    statusType: 'soon',
-    platform: 'macOS · iPhone · Apple Watch',
+    description: 'Run, track and steer your AI agents and projects from one place. Hand off work at the end of the day and pick up where your agents left off.',
+    platforms: ['Mac', 'iPhone', 'Apple Watch'],
     accent: '#3fb6d9',
-    bg: 'linear-gradient(135deg, #00101f 0%, #0b2340 60%, #111 100%)',
-    iconImg: '/apps/falconer.png',
-    detail: 'Hand off work at the end of the day; pick up where your agents left off.',
+    icon: '/apps/falconer.png',
+    status: 'Early access',
+    cta: 'Request access',
+    href: ask('Falconer'),
   },
   {
-    name: 'Watch Assist AI',
+    id: 'dabom',
+    name: 'daBOM',
+    tagline: 'Parts, purchasing and stock in one place.',
+    description: 'Bills of materials, purchase orders, receipts and inventory for a team that builds hardware. Built on a real production line, with a Copilot that does the paperwork.',
+    platforms: ['Mac', 'Windows', 'iPad'],
+    accent: '#3d8bff',
+    icon: '/apps/dabom.png',
+    status: 'Early access',
+    cta: 'Request access',
+    href: ask('daBOM'),
+  },
+  {
+    id: 'artsuite',
+    name: 'ArtSuite',
+    tagline: 'Design, sculpt and render. One launcher.',
+    description: 'Installs and updates our three design apps and keeps them current on its own.',
+    platforms: ['Mac', 'Windows'],
+    accent: '#ff5514',
+    icon: '/apps/artsuite.png',
+    status: 'Free · invite code',
+    cta: 'Get ArtSuite',
+    href: '/artsuite/',
+    includes: [
+      { name: 'SolidArt', what: 'CAD you build with AI', icon: '/apps/solidart.png' },
+      { name: 'SculptArt', what: 'Sculpt for the CNC', icon: '/apps/sculptart.png' },
+      { name: 'RenderArt', what: 'Photoreal renders', icon: '/apps/renderart.png' },
+    ],
+  },
+  {
+    id: 'watchagent',
+    name: 'WatchAgent',
     tagline: 'AI on your wrist.',
-    description: 'Speak a question on your Apple Watch. Hear the answer through your AirPods. Hands-free, wherever you are.',
-    status: 'Coming Soon',
-    statusType: 'soon',
-    platform: 'Apple Watch · iPhone',
+    description: 'Ask a question on your Apple Watch and hear the answer in your AirPods. Hands-free, wherever you are.',
+    platforms: ['Apple Watch', 'iPhone'],
     accent: '#ff6a00',
-    bg: 'linear-gradient(135deg, #1a0f00 0%, #2a1500 60%, #111 100%)',
-    icon: '⌚',
-    detail: 'Voice in, spoken answer out. Works anywhere your watch goes.',
+    icon: '/apps/watchagent.svg',
+    status: 'Beta',
+    cta: 'Join the beta',
+    href: ask('WatchAgent'),
   },
   {
-    name: 'Neopix',
-    tagline: 'Your lights. Your rules.',
-    description: 'BLE LED control from your iPhone — any strip, any colour, any rhythm. The lighting app that actually works with the hardware you already own.',
-    status: 'Coming Soon',
-    statusType: 'soon',
-    platform: 'iPhone',
-    accent: '#7b2fff',
-    bg: 'linear-gradient(135deg, #0d0020 0%, #1a0035 60%, #111 100%)',
-    icon: '💡',
-    detail: 'Supports NeoPixels, ELK-BLEDOM, Triones and more.',
+    id: 'taskbandit',
+    name: 'Task Bandit',
+    tagline: 'Record the meeting. Get your tasks.',
+    description: 'Set your phone on the table and tap Record. Afterwards you get a transcript, a summary and the tasks that are yours. It all happens on your iPhone.',
+    platforms: ['iPhone', 'Apple Watch'],
+    accent: '#c9c9c9',
+    icon: '/apps/taskbandit.png',
+    status: 'Beta',
+    cta: 'Join the beta',
+    href: ask('Task Bandit'),
+  },
+  {
+    id: 'airreply',
+    name: 'AirReply',
+    tagline: 'Talk. Done.',
+    description: 'One click in your menu bar and dictate into any app: chat, email, notes, AI assistants. Your words appear as you speak and land wherever your cursor is.',
+    platforms: ['Mac', 'Apple Watch', 'iPhone'],
+    accent: '#00c2ff',
+    icon: '/apps/airreply.png',
+    status: 'Free download',
+    cta: 'Download free',
+    href: '/airreply/',
   },
 ];
 
-const TOOLS = [
-  { name: 'Ableton', category: 'Music Production' },
-  { name: 'Keyshot', category: '3D Rendering' },
-  { name: 'Rhino', category: 'CAD · 3D Modelling' },
-  { name: 'Blender', category: '3D · Animation' },
-  { name: 'Claude Code', category: 'AI Development' },
-  { name: 'Xcode', category: 'iOS · watchOS' },
-];
+function AppCard({ app }) {
+  return (
+    <article id={app.id} className="app-card" style={{ '--accent': app.accent }}>
+      <div className="app-media">
+        <div className="app-media-glow" />
+        {app.shot
+          ? <img src={app.shot} alt={`${app.name} screenshot`} className="app-shot" loading="lazy" />
+          : <img src={app.icon} alt="" className="app-media-icon" loading="lazy" />}
+      </div>
+      <div className="app-body">
+        <div className="app-head">
+          <img src={app.icon} alt={`${app.name} icon`} className="app-icon" loading="lazy" />
+          <div>
+            <h3 className="app-name">{app.name}</h3>
+            <p className="app-tagline">{app.tagline}</p>
+          </div>
+        </div>
+        <p className="app-description">{app.description}</p>
+        {app.includes && (
+          <ul className="app-includes">
+            {app.includes.map((sub) => (
+              <li key={sub.name}>
+                <img src={sub.icon} alt="" loading="lazy" />
+                <span><b>{sub.name}</b>{sub.what}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="app-foot">
+          <a href={app.href} className="app-cta">{app.cta}</a>
+          <span className="app-status">{app.status}</span>
+        </div>
+        <ul className="app-platforms">
+          {app.platforms.map((p) => <li key={p}>{p}</li>)}
+        </ul>
+      </div>
+    </article>
+  );
+}
 
 function App() {
   const [loaded, setLoaded] = useState(false);
+  const [particles] = useState(() => Array.from({ length: 30 }, () => ({
+    left: `${Math.random() * 100}%`,
+    top: `${Math.random() * 100}%`,
+    size: `${1 + Math.random() * 2}px`,
+    duration: `${8 + Math.random() * 15}s`,
+    delay: `${Math.random() * 10}s`,
+    opacity: 0.1 + Math.random() * 0.3,
+  })));
 
   useEffect(() => {
     document.fonts.ready.then(() => setLoaded(true));
@@ -147,151 +161,97 @@ function App() {
 
       {/* ── Navbar ── */}
       <nav className="navbar">
-        <div className="logo">
-          <img src="/logo.png" alt="Custom Fusion" style={{ width: '36px', marginRight: '12px' }} />
+        <a href="#top" className="logo">
+          <img src="/logo.png" alt="" />
           Custom&nbsp;<span>Fusion</span>
-        </div>
+        </a>
         <ul className="nav-links">
           <li><a href="#apps">Apps</a></li>
-          <li><a href="#platform">Platform</a></li>
+          <li><a href="#why-free">Why free</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
+        <a href="#apps" className="nav-cta">Get the apps</a>
       </nav>
 
       {/* ── Hero ── */}
-      <header className="hero">
+      <header id="top" className="hero">
         <div className="hero-particles">
-          {Array.from({ length: 30 }).map((_, i) => (
+          {particles.map((p, i) => (
             <div key={i} className="particle" style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${1 + Math.random() * 2}px`,
-              height: `${1 + Math.random() * 2}px`,
-              animationDuration: `${8 + Math.random() * 15}s`,
-              animationDelay: `${Math.random() * 10}s`,
-              opacity: 0.1 + Math.random() * 0.3,
+              left: p.left, top: p.top, width: p.size, height: p.size,
+              animationDuration: p.duration, animationDelay: p.delay, opacity: p.opacity,
             }} />
           ))}
         </div>
         <div className="hero-content">
-          <div className="hero-eyebrow">AI Studio · New York</div>
+          <div className="hero-eyebrow">Custom Fusion · Free apps</div>
           <h1 className="hero-headline">
-            <AnimatedWord text="Not" baseDelay={0.2} />
+            <AnimatedWord text="Built" baseDelay={0.2} />
             {' '}
-            <AnimatedWord text="a" baseDelay={0.4} />
+            <AnimatedWord text="for" baseDelay={0.45} />
             {' '}
-            <AnimatedWord text="Replacement." baseDelay={0.5} />
+            <AnimatedWord text="us." baseDelay={0.6} />
             <br />
-            <AnimatedWord text="An" baseDelay={1.1} />
+            <AnimatedWord text="Free" baseDelay={1.0} isAccent />
             {' '}
-            <AnimatedWord text="Upgrade." baseDelay={1.3} isAccent />
+            <AnimatedWord text="for" baseDelay={1.25} />
+            {' '}
+            <AnimatedWord text="you." baseDelay={1.4} />
           </h1>
           <p className="hero-tagline">
-            We build Claude AI into the tools professionals already love — so creativity flows faster, work gets smarter, and humans stay in control.
+            Six apps we made to run our own studio: AI agents, hardware purchasing, 3D design, meetings and dictation. Now free for everyone.
           </p>
           <div className="hero-ctas">
-            <a href="#apps" className="cta-button">See Our Apps</a>
-            <a href="#contact" className="cta-link">Get in touch →</a>
+            <a href="#apps" className="cta-button">Get the apps</a>
+            <a href="#why-free" className="cta-link">Why free →</a>
           </div>
         </div>
         <div className="hero-visual">
-          <Canvas camera={{ position: [0, 0, 7], fov: 50 }}>
-            <OrbitControls enableZoom={false} enablePan={false} />
-            <DodecahedronLogo />
-          </Canvas>
+          <Suspense fallback={null}><HeroLogo /></Suspense>
         </div>
       </header>
 
-      {/* ── Mission ── */}
-      <section className="mission">
-        <div className="mission-inner">
-          <div className="mission-label">Our Belief</div>
-          <blockquote className="mission-quote">
-            AI shouldn't make you redundant.<br />
-            It should make you <span className="accent">unstoppable.</span>
-          </blockquote>
-          <p className="mission-body">
-            Custom Fusion builds AI-powered tools across every working environment — music, design, engineering, development. We don't chase trends. We find the places where talented people are still doing work that machines should be handling, and we fix that.
-          </p>
-          <div className="mission-stats">
-            <div className="mstat"><span className="mstat-num">6</span><span className="mstat-label">Apps</span></div>
-            <div className="mstat"><span className="mstat-num">6+</span><span className="mstat-label">Professional Tools Integrated</span></div>
-            <div className="mstat"><span className="mstat-num">1</span><span className="mstat-label">AI at the Core</span></div>
-          </div>
-        </div>
-      </section>
+      {/* ── App dock: one row of icons that jumps to each card ── */}
+      <nav className="app-dock" aria-label="Apps">
+        {APPS.map((app) => (
+          <a key={app.id} href={`#${app.id}`} className="dock-item">
+            <img src={app.icon} alt="" />
+            <span>{app.name}</span>
+          </a>
+        ))}
+      </nav>
 
       {/* ── Apps ── */}
       <section id="apps" className="apps-section">
         <div className="section-header">
-          <h2>Apps</h2>
-          <p className="section-sub">Built from real frustration. Used every day.</p>
+          <h2>The Apps</h2>
+          <p className="section-sub">Made from real frustration. Used every day.</p>
         </div>
         <div className="apps-grid">
-          {APPS.map((app) => (
-            <div key={app.name} className="app-card" style={{ background: app.bg }}>
-              <div className="app-card-glow" style={{ background: app.accent }} />
-              <div className="app-card-top">
-                <div className="app-icon-large">
-                  {app.iconImg ? <img src={app.iconImg} alt={`${app.name} icon`} className="app-icon-img" /> : app.icon}
-                </div>
-                <span className={`app-status ${app.statusType}`} style={app.statusType === 'available' ? { borderColor: app.accent, color: app.accent } : {}}>
-                  {app.status}
-                </span>
-              </div>
-              <h3 className="app-name">{app.name}</h3>
-              <p className="app-tagline" style={{ color: app.accent }}>{app.tagline}</p>
-              <p className="app-description">{app.description}</p>
-              <div className="app-detail-line">{app.detail}</div>
-              {app.href && (
-                <a href={app.href} className="app-cta" style={{ background: app.accent }}>{app.cta}</a>
-              )}
-              <div className="app-platform">{app.platform}</div>
-            </div>
-          ))}
+          {APPS.map((app) => <AppCard key={app.id} app={app} />)}
         </div>
       </section>
 
-      {/* ── Platform ── */}
-      <section id="platform" className="platform-section">
-        <div className="section-header">
-          <h2>The Platform</h2>
-          <p className="section-sub">One AI brain. Every professional environment.</p>
-        </div>
-        <div className="platform-body">
-          <p className="platform-intro">
-            At the core of everything we build is a single connected ecosystem. A <span className="accent">Mac</span>, a <span className="accent">PC</span>, an <span className="accent">Apple Watch</span>, an <span className="accent">iPhone</span> — all wired to Claude AI. The heavy creative tools run on the PC. The interfaces live on every device. The intelligence flows through all of it.
-          </p>
-          <div className="tools-grid">
-            {TOOLS.map((tool) => (
-              <div key={tool.name} className="tool-card">
-                <div className="tool-name">{tool.name}</div>
-                <div className="tool-category">{tool.category}</div>
-              </div>
-            ))}
-          </div>
-          <div className="platform-flow">
-            <div className="flow-node">
-              <div className="flow-node-title">Professional Tools</div>
-              <div className="flow-node-sub">Ableton · Keyshot · Rhino · Blender</div>
+      {/* ── Why free ── */}
+      <section id="why-free" className="why-free">
+        <div className="why-inner">
+          <div className="why-label">Why free</div>
+          <blockquote className="why-quote">
+            We built these for ourselves.<br />
+            They're too useful to <span className="accent">keep to ourselves.</span>
+          </blockquote>
+          <div className="why-points">
+            <div>
+              <b>No catch</b>
+              <p>No subscription, no ads. The apps that use AI run on your own Claude or ChatGPT account, or on your device.</p>
             </div>
-            <div className="flow-connector">
-              <div className="flow-line" />
-              <div className="flow-arrow-icon">→</div>
-              <div className="flow-line" />
+            <div>
+              <b>Still improving</b>
+              <p>We use these every day, so they keep getting better. Updates install with one click.</p>
             </div>
-            <div className="flow-node accent-node">
-              <div className="flow-node-title">Claude AI</div>
-              <div className="flow-node-sub">The intelligence layer</div>
-            </div>
-            <div className="flow-connector">
-              <div className="flow-line" />
-              <div className="flow-arrow-icon">→</div>
-              <div className="flow-line" />
-            </div>
-            <div className="flow-node">
-              <div className="flow-node-title">Your Devices</div>
-              <div className="flow-node-sub">Mac · Apple Watch · iPhone</div>
+            <div>
+              <b>All we ask</b>
+              <p>Tell us what breaks, and tell a friend if one saves you time.</p>
             </div>
           </div>
         </div>
@@ -300,23 +260,17 @@ function App() {
       {/* ── Contact ── */}
       <section id="contact" className="contact">
         <div className="contact-content">
-          <h2>Let's Build Something</h2>
+          <h2>Say Hello</h2>
           <p className="contact-description">
-            Got a workflow still living in 2015? A tool you wish could think for itself? An idea that doesn't fit anywhere yet? That's exactly where we work.
+            Found a bug, want early access, or have an idea for the next one? Write to us.
           </p>
-          <a href="mailto:julian@customfusion.co" className="contact-email">julian@customfusion.co</a>
-          <div className="contact-locations">
-            <span>New York</span>
-            <span className="contact-divider">·</span>
-            <span>San Francisco</span>
-            <span className="contact-divider">·</span>
-            <span>Paris</span>
-          </div>
+          <a href={`mailto:${EMAIL}`} className="contact-email">{EMAIL}</a>
         </div>
       </section>
 
       <footer className="site-footer">
-        <p>© {new Date().getFullYear()} Custom Fusion Inc. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} Custom Fusion Inc. · New York</p>
+        <p><a href="/airreply/privacy/">Privacy</a></p>
       </footer>
 
     </div>
