@@ -632,3 +632,14 @@ canvas {
 /* A watch next to a Mac window stays small so the window reads */
 .spot-media .shot-mac + .shot-watch { width: 120px; border-radius: 34px; padding: 6px; }
 .spot-media .shot-mac + .shot-watch img { border-radius: 27px; }
+
+/* Card links to the app's own page */
+.app-name a:hover { color: var(--accent); }
+.app-more { font-size: 0.85rem; color: var(--text-muted); transition: color 0.2s; }
+.app-more:hover { color: var(--accent); }
+.app-platforms li.app-status {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
+}
