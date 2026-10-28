@@ -548,3 +548,87 @@ canvas {
 @media (max-width: 480px) {
   .nav-cta { display: none; }
 }
+
+/* ── Screenshots in device frames ── */
+.shot { position: relative; }
+.shot img { display: block; width: 100%; height: auto; }
+.shot-mac img {
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 30px 70px rgba(0, 0, 0, 0.7);
+}
+.shot-phone, .shot-watch {
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 0 0 5px #1c1c1e, 0 30px 70px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+}
+.shot-phone { width: 220px; border-radius: 34px; padding: 5px; }
+.shot-phone img { border-radius: 29px; }
+.shot-watch { width: 170px; border-radius: 44px; padding: 8px; }
+.shot-watch img { border-radius: 34px; }
+
+/* On a card the shot peeks up from the bottom edge */
+.app-media:has(.shot-peek) { align-items: flex-start; }
+.shot-peek.shot-mac { width: 88%; margin-top: 28px; }
+.shot-peek.shot-phone { width: 170px; margin-top: 24px; }
+.shot-peek.shot-watch { width: 150px; margin-top: 30px; }
+.app-card:hover .shot-peek { transform: translateY(-6px); }
+.shot-peek { transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+/* ── A closer look ── */
+.spotlights {
+  padding: 6rem 5%;
+  background: var(--surface-color);
+}
+.spotlight {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  max-width: 1300px;
+  margin: 0 auto 7rem;
+}
+.spotlight:last-child { margin-bottom: 0; }
+.spotlight.flip { grid-template-columns: 1fr 1.4fr; }
+.spotlight.flip .spot-media { order: 2; }
+.spot-media {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1.5rem;
+}
+.spot-media .app-media-glow { width: 60%; height: 60%; left: 20%; top: 20%; opacity: 0.18; }
+.spot-media .shot-mac { flex: 1; min-width: 0; }
+.spot-points { margin: 1.5rem 0 2rem; display: grid; gap: 0.9rem; }
+.spot-points li {
+  position: relative;
+  padding-left: 1.6rem;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.75);
+}
+.spot-points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+.spot-text .app-cta { display: inline-block; }
+
+@media (max-width: 900px) {
+  .spotlight, .spotlight.flip { grid-template-columns: 1fr; gap: 2rem; margin-bottom: 5rem; }
+  .spotlight.flip .spot-media { order: 0; }
+  .spot-media { flex-wrap: wrap; }
+  .shot-phone { width: 180px; }
+  .shot-watch { width: 150px; }
+}
+.spot-media.spot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
+/* A watch next to a Mac window stays small so the window reads */
+.spot-media .shot-mac + .shot-watch { width: 120px; border-radius: 34px; padding: 6px; }
+.spot-media .shot-mac + .shot-watch img { border-radius: 27px; }

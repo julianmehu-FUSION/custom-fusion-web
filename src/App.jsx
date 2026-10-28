@@ -20,7 +20,9 @@ function AnimatedWord({ text, baseDelay, isAccent }) {
 }
 
 // ── The six featured apps ──────────────────────────────────────────────────────
-// `shot` (a device-framed screenshot) replaces the big icon once it exists.
+// `shots`: [{ src, kind: 'mac' | 'phone' | 'watch' }]. The first one replaces the
+// big icon on the card (or `card`, if set); all of them show in the spotlight.
+// `points`: three short lines for the spotlight.
 const APPS = [
   {
     id: 'falconer',
@@ -33,6 +35,14 @@ const APPS = [
     status: 'Early access',
     cta: 'Request access',
     href: ask('Falconer'),
+    shots: [
+      { src: '/shots/falconer-1.webp', kind: 'mac' },
+    ],
+    points: [
+      'Every project, task and agent run in one place.',
+      'Hand work to your agents at the end of the day.',
+      'Check in from your iPhone or Apple Watch.',
+    ],
   },
   {
     id: 'dabom',
@@ -45,6 +55,14 @@ const APPS = [
     status: 'Early access',
     cta: 'Request access',
     href: ask('daBOM'),
+    shots: [
+      { src: '/shots/dabom-1.webp', kind: 'mac' },
+    ],
+    points: [
+      'BOMs, purchase orders, receipts and stock in one ledger.',
+      'Card receipts become purchase orders on their own.',
+      'A Copilot that drafts and files the paperwork.',
+    ],
   },
   {
     id: 'artsuite',
@@ -57,6 +75,17 @@ const APPS = [
     status: 'Free · invite code',
     cta: 'Get ArtSuite',
     href: '/artsuite/',
+    shots: [
+      { src: '/shots/renderart-render.webp', kind: 'mac' },
+      { src: '/shots/solidart-1.webp', kind: 'mac' },
+      { src: '/shots/sculptart-1.webp', kind: 'mac' },
+      { src: '/shots/renderart-1.webp', kind: 'mac' },
+    ],
+    points: [
+      'SolidArt: parts, assemblies and drawings, STEP in and out.',
+      'SculptArt: reliefs and molds, exported as tiles ready to cut.',
+      'RenderArt: photoreal stills and turntables of what you design.',
+    ],
     includes: [
       { name: 'SolidArt', what: 'CAD you build with AI', icon: '/apps/solidart.png' },
       { name: 'SculptArt', what: 'Sculpt for the CNC', icon: '/apps/sculptart.png' },
@@ -74,6 +103,14 @@ const APPS = [
     status: 'Beta',
     cta: 'Join the beta',
     href: ask('WatchAgent'),
+    shots: [
+      { src: '/shots/watchagent-1.webp', kind: 'watch' },
+    ],
+    points: [
+      'Raise your wrist and ask.',
+      'The answer plays in your AirPods.',
+      'Works anywhere your watch goes.',
+    ],
   },
   {
     id: 'taskbandit',
@@ -86,6 +123,16 @@ const APPS = [
     status: 'Beta',
     cta: 'Join the beta',
     href: ask('Task Bandit'),
+    card: { src: '/shots/taskbandit-home.webp', kind: 'phone' },
+    shots: [
+      { src: '/shots/taskbandit-1.webp', kind: 'phone' },
+      { src: '/shots/taskbandit-2.webp', kind: 'phone' },
+    ],
+    points: [
+      'Keeps recording with the screen locked.',
+      'Transcript, summary and the tasks that are yours.',
+      'Stays on your iPhone unless you share it.',
+    ],
   },
   {
     id: 'airreply',
@@ -98,16 +145,59 @@ const APPS = [
     status: 'Free download',
     cta: 'Download free',
     href: '/airreply/',
+    shots: [
+      { src: '/shots/airreply-1.webp', kind: 'mac' },
+      { src: '/shots/airreply-watch.webp', kind: 'watch' },
+    ],
+    points: [
+      'Works in any app with a text field.',
+      'Your words appear live as you speak.',
+      'Dictate from your Apple Watch or iPhone too.',
+    ],
   },
 ];
+
+// A screenshot in a device frame. Mac shots are already a window, so they only
+// get a shadow; phone and watch shots get a CSS bezel.
+function Shot({ shot, name, peek }) {
+  return (
+    <div className={`shot shot-${shot.kind}${peek ? ' shot-peek' : ''}`}>
+      <img src={shot.src} alt={`${name} screenshot`} loading="lazy" />
+    </div>
+  );
+}
+
+function Spotlight({ app, flip }) {
+  return (
+    <div className={`spotlight${flip ? ' flip' : ''}`} style={{ '--accent': app.accent }}>
+      <div className={`spot-media${app.shots.length > 2 ? ' spot-grid' : ''}`}>
+        <div className="app-media-glow" />
+        {app.shots.map((shot) => <Shot key={shot.src} shot={shot} name={app.name} />)}
+      </div>
+      <div className="spot-text">
+        <div className="app-head">
+          <img src={app.icon} alt="" className="app-icon" loading="lazy" />
+          <div>
+            <h3 className="app-name">{app.name}</h3>
+            <p className="app-tagline">{app.tagline}</p>
+          </div>
+        </div>
+        <ul className="spot-points">
+          {app.points.map((p) => <li key={p}>{p}</li>)}
+        </ul>
+        <a href={app.href} className="app-cta">{app.cta}</a>
+      </div>
+    </div>
+  );
+}
 
 function AppCard({ app }) {
   return (
     <article id={app.id} className="app-card" style={{ '--accent': app.accent }}>
       <div className="app-media">
         <div className="app-media-glow" />
-        {app.shot
-          ? <img src={app.shot} alt={`${app.name} screenshot`} className="app-shot" loading="lazy" />
+        {app.shots.length
+          ? <Shot shot={app.card || app.shots[0]} name={app.name} peek />
           : <img src={app.icon} alt="" className="app-media-icon" loading="lazy" />}
       </div>
       <div className="app-body">
@@ -231,6 +321,19 @@ function App() {
           {APPS.map((app) => <AppCard key={app.id} app={app} />)}
         </div>
       </section>
+
+      {/* ── A closer look: one section per app that has screenshots ── */}
+      {APPS.some((a) => a.shots.length > 0) && (
+        <section id="closer-look" className="spotlights">
+          <div className="section-header">
+            <h2>A Closer Look</h2>
+            <p className="section-sub">Real apps, shown with sample data.</p>
+          </div>
+          {APPS.filter((a) => a.shots.length > 0).map((app, i) => (
+            <Spotlight key={app.id} app={app} flip={i % 2 === 1} />
+          ))}
+        </section>
+      )}
 
       {/* ── Why free ── */}
       <section id="why-free" className="why-free">
